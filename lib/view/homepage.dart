@@ -83,16 +83,16 @@ class HomePage extends StatelessWidget {
                     return const Center(child: CircularProgressIndicator());
                   }
                   final documents = snapshot.data!.docs;
+
                   return ListView.builder(
                       itemCount: documents.length,
                       shrinkWrap: true,
                       itemBuilder: (context, index) {
                         QueryDocumentSnapshot<Map<String, dynamic>> data =
                             snapshot.data!.docs[index];
-                        return Expanded(
-                            child: CardTodoListWidget(
+                        return CardTodoListWidget(
                           data: data,
-                        ));
+                        );
                       });
                 })
           ]),

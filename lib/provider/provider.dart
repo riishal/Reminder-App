@@ -1,5 +1,8 @@
+import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
+import 'package:fluttertoast/fluttertoast.dart';
 import 'package:intl/intl.dart';
+import 'package:todo_app/constants/alert_message.dart';
 
 import '../model/todo_model.dart';
 import '../service/todo_service.dart';
@@ -7,22 +10,36 @@ import '../service/todo_service.dart';
 class Providerdata extends ChangeNotifier {
   final titleController = TextEditingController();
   final descriptionController = TextEditingController();
+  final format = DateFormat.yMd();
   int radioValue = 0;
   String dateValue = "dd/mm/yy";
   String timeValue = "hh : mm";
-  String category = "";
+  String category = "Other";
 
   void setRadioValue(groupValue) {
     radioValue = groupValue;
     switch (groupValue) {
       case 1:
-        category = "Learning";
+        category = "Learn";
         break;
       case 2:
-        category = "Working";
+        category = "Work";
         break;
       case 3:
         category = "Genarel";
+        break;
+      default:
+        category;
+        break;
+    }
+    notifyListeners();
+  }
+
+  setDateAndTime(context) {
+    final format = DateFormat.yMd();
+    if (dateValue == "dd/mm/yy" && timeValue == "hh : mm") {
+      dateValue = format.format(DateTime.now());
+      timeValue = timeValue = DateFormat.jm().format(DateTime.now());
     }
     notifyListeners();
   }
@@ -33,24 +50,30 @@ class Providerdata extends ChangeNotifier {
         initialDate: DateTime.now(),
         firstDate: DateTime(2021),
         lastDate: DateTime(2025));
+
+    switch (dateValue) {}
     if (getValue != null) {
-      final format = DateFormat.yMd();
       dateValue = format.format(getValue);
+    } else {
+      dateValue = format.format(DateTime.now());
     }
+
     notifyListeners();
   }
 
   void setTime(BuildContext context) async {
-    final getTime =
-        await showTimePicker(context: context, initialTime: TimeOfDay.now());
+    final getTime = await showTimePicker(
+        context: context, initialTime: TimeOfDay.fromDateTime(DateTime.now()));
     if (getTime != null) {
       timeValue = getTime.format(context);
+    } else {
+      timeValue = DateFormat.jm().format(DateTime.now());
     }
     notifyListeners();
   }
 
-  addTask() {
-    print('aded');
+  addTask(context) {
+    setDateAndTime(context);
     TodoService().addNewTask(TodoModel(
         isDone: false,
         titleTask: titleController.text,
@@ -58,7 +81,7 @@ class Providerdata extends ChangeNotifier {
         category: category,
         dateTask: dateValue,
         timeTask: timeValue));
-    print("Data saving");
+    showToast("Task added successfully");
   }
 
   void clear(context) {
@@ -67,16 +90,46 @@ class Providerdata extends ChangeNotifier {
     radioValue = 0;
     dateValue = "dd/mm/yy";
     timeValue = "hh : mm";
+    category = "Other";
+
     Navigator.pop(context);
   }
 
-  updateTask(String docId, bool valueUpdate) {
-    print('update');
-    print(valueUpdate);
-    TodoService().updateTask(docId, valueUpdate);
+  updateTask(String docId, bool value) {
+    TodoService().updateTask(docId, value);
   }
 
-  void delectTask(docId) {
-    TodoService().delectTask(docId);
+  void deleteTask(docId) {
+    TodoService().deleteTask(docId);
+  }
+
+  void showToast(String msg) {
+    Fluttertoast.showToast(
+        msg: msg,
+        backgroundColor: Colors.blue.shade200,
+        textColor: Colors.white);
+  }
+
+  void checkValues(context) {
+    String title = titleController.text.trim();
+    String description = descriptionController.text.trim();
+    if (title == "" || description == "") {
+      AlertMessage.showAlertDialog(
+          context, "Incomplited", "Please fill all the fields");
+    } else {
+      //login
+      addTask(context);
+      clear(context);
+    }
+  }
+
+  chckConditions(String time, String date) {
+    var currtime = TimeOfDay.now();
+    var timecurr =
+        '${currtime.hour.toString().padLeft(2, '0')}:${currtime.minute.toString().padLeft(2, '0')}';
+    var currentDate = format.format(DateTime.now());
+    if (date == currentDate && time == timecurr) {
+      print("Notification");
+    }
   }
 }

@@ -22,15 +22,15 @@ class TextFieldWidget extends StatelessWidget {
             borderRadius: BorderRadius.circular(9)),
         child: TextField(
           controller: textController,
-          focusNode: focusNode,
-          onTapOutside: (event) {
-            focusNode.unfocus();
-          },
+          // focusNode: focusNode,
+          // onTapOutside: (event) {
+          //   focusNode.unfocus();
+          // },
           decoration: InputDecoration(
               enabledBorder: InputBorder.none,
               focusedBorder: InputBorder.none,
               hintText: hintText),
-          maxLength: maxLine,
+          maxLines: maxLine,
         ));
   }
 }

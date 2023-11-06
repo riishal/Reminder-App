@@ -1,5 +1,6 @@
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
+
 import 'package:provider/provider.dart';
 import 'package:todo_app/provider/provider.dart';
 import 'package:todo_app/widgets/date_time_widget.dart';
@@ -9,7 +10,7 @@ import 'package:todo_app/widgets/textfield_widget.dart';
 import '../constants/app_style.dart';
 
 class AddNewTask extends StatelessWidget {
-  AddNewTask({
+  const AddNewTask({
     super.key,
     required this.size,
   });
@@ -63,7 +64,7 @@ class AddNewTask extends StatelessWidget {
           ),
           TextFieldWidget(
               hintText: "Add Description",
-              maxLine: 5,
+              maxLine: 1,
               textController: getdata.descriptionController),
           const SizedBox(
             height: 12,
@@ -116,7 +117,7 @@ class AddNewTask extends StatelessWidget {
                   onTap: () => getdata.setTime(context),
                   iconSelection: CupertinoIcons.clock,
                   titleText: "Time",
-                  valueText: getdata.timeValue),
+                  valueText: getdata.timeValue.toString()),
             ],
           ),
           const SizedBox(
@@ -153,9 +154,8 @@ class AddNewTask extends StatelessWidget {
                             borderRadius: BorderRadius.circular(8),
                           ),
                           padding: const EdgeInsets.symmetric(vertical: 15)),
-                      onPressed: () async {
-                        await getdata.addTask();
-                        getdata.clear(context);
+                      onPressed: () {
+                        getdata.checkValues(context);
                       },
                       child: const Text("Create")))
             ],
