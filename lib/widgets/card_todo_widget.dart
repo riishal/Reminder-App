@@ -47,12 +47,11 @@ class _CardTodoListWidgetState extends State<CardTodoListWidget> {
     }
 
     return Consumer<Providerdata>(builder: (context, getdata, child) {
-      return Container(
-        margin: const EdgeInsets.symmetric(vertical: 6),
+      return SizedBox(
         height: 120,
         width: double.infinity,
-        decoration: BoxDecoration(
-            color: Colors.white, borderRadius: BorderRadius.circular(12)),
+        // decoration: BoxDecoration(
+        //     color: Colors.white, borderRadius: BorderRadius.circular(12)),
         child: Row(children: [
           Container(
             width: 20,

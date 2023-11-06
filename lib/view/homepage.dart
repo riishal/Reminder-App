@@ -84,16 +84,30 @@ class HomePage extends StatelessWidget {
                   }
                   final documents = snapshot.data!.docs;
 
-                  return ListView.builder(
-                      itemCount: documents.length,
-                      shrinkWrap: true,
-                      itemBuilder: (context, index) {
-                        QueryDocumentSnapshot<Map<String, dynamic>> data =
-                            snapshot.data!.docs[index];
-                        return CardTodoListWidget(
-                          data: data,
-                        );
-                      });
+                  return Container(
+                    height: 900,
+                    child: ListView.separated(
+                        itemBuilder: (context, index) {
+                          QueryDocumentSnapshot<Map<String, dynamic>> data =
+                              snapshot.data!.docs[index];
+                          return Material(
+                            color: Colors.transparent,
+                            child: Ink(
+                              decoration: BoxDecoration(
+                                  color: Colors.white,
+                                  borderRadius: BorderRadius.circular(12)),
+                              child: InkWell(
+                                  borderRadius: BorderRadius.circular(12),
+                                  onTap: () {},
+                                  child: CardTodoListWidget(data: data)),
+                            ),
+                          );
+                        },
+                        separatorBuilder: (context, index) => SizedBox(
+                              height: 15,
+                            ),
+                        itemCount: documents.length),
+                  );
                 })
           ]),
         )),
