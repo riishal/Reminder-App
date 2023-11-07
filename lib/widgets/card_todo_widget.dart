@@ -2,7 +2,6 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/cupertino.dart';
 
 import 'package:flutter/material.dart';
-import 'package:fluttertoast/fluttertoast.dart';
 
 import 'package:provider/provider.dart';
 import 'package:todo_app/provider/provider.dart';
@@ -30,6 +29,8 @@ class _CardTodoListWidgetState extends State<CardTodoListWidget> {
 
   @override
   Widget build(BuildContext context) {
+    // NotificationHelper()
+    //     .scheduledNotification(hour: 11, minutes: 46, id: 1, sound: 'default');
     Color categoryColor = Colors.black;
 
     final category = widget.data["category"];
@@ -42,7 +43,7 @@ class _CardTodoListWidgetState extends State<CardTodoListWidget> {
         categoryColor = Colors.blue.shade200;
         break;
       case "Genarel":
-        categoryColor = Colors.amber.shade200;
+        categoryColor = Colors.amber.shade500;
         break;
     }
 
@@ -73,14 +74,9 @@ class _CardTodoListWidgetState extends State<CardTodoListWidget> {
                         ? IconButton(
                             onPressed: () {
                               getdata.deleteTask(widget.data.id);
-                              Fluttertoast.showToast(
-                                msg: "${widget.data["titleTask"]} Deleted",
-                                toastLength: Toast.LENGTH_SHORT,
-                                gravity: ToastGravity.BOTTOM,
-                                timeInSecForIosWeb: 1,
-                                backgroundColor: Colors.black45,
-                                textColor: Colors.white,
-                              );
+                              getdata.showToast(
+                                  "${widget.data["titleTask"]} Task has Deleted",
+                                  Colors.red);
                             },
                             icon: const Icon(
                               CupertinoIcons.delete,

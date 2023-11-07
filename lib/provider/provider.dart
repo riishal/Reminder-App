@@ -1,4 +1,3 @@
-import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 import 'package:fluttertoast/fluttertoast.dart';
 import 'package:intl/intl.dart';
@@ -32,6 +31,27 @@ class Providerdata extends ChangeNotifier {
         category;
         break;
     }
+
+    notifyListeners();
+  }
+
+  void updateRadioValue(groupValue) {
+    switch (groupValue) {
+      case "Learn":
+        radioValue = 1;
+
+        break;
+      case "Work":
+        radioValue = 2;
+        break;
+      case "Genarel":
+        radioValue = 3;
+        break;
+      default:
+        radioValue;
+        break;
+    }
+
     notifyListeners();
   }
 
@@ -39,7 +59,7 @@ class Providerdata extends ChangeNotifier {
     final format = DateFormat.yMd();
     if (dateValue == "dd/mm/yy" && timeValue == "hh : mm") {
       dateValue = format.format(DateTime.now());
-      timeValue = timeValue = DateFormat.jm().format(DateTime.now());
+      timeValue = DateFormat.jm().format(DateTime.now());
     }
     notifyListeners();
   }
@@ -51,7 +71,6 @@ class Providerdata extends ChangeNotifier {
         firstDate: DateTime(2021),
         lastDate: DateTime(2025));
 
-    switch (dateValue) {}
     if (getValue != null) {
       dateValue = format.format(getValue);
     } else {
@@ -81,7 +100,30 @@ class Providerdata extends ChangeNotifier {
         category: category,
         dateTask: dateValue,
         timeTask: timeValue));
-    showToast("Task added successfully");
+    showToast("Task added successfully", Colors.blue.shade400);
+  }
+
+  updateAllTask(context, String docId) {
+    // print(object);
+    String title = titleController.text.trim();
+    String description = descriptionController.text.trim();
+    if (title == "" || description == "") {
+      AlertMessage.showAlertDialog(
+          context, "Not Updated", "Please Update all the fields");
+    } else {
+      setDateAndTime(context);
+      TodoService().updateAllTask(
+          TodoModel(
+              isDone: false,
+              titleTask: titleController.text,
+              description: descriptionController.text,
+              category: category,
+              dateTask: dateValue,
+              timeTask: timeValue),
+          docId);
+      showToast("Task has Updated", Colors.amber.shade700);
+      clear(context);
+    }
   }
 
   void clear(context) {
@@ -103,11 +145,9 @@ class Providerdata extends ChangeNotifier {
     TodoService().deleteTask(docId);
   }
 
-  void showToast(String msg) {
+  void showToast(String msg, Color color) {
     Fluttertoast.showToast(
-        msg: msg,
-        backgroundColor: Colors.blue.shade200,
-        textColor: Colors.white);
+        msg: msg, backgroundColor: color, textColor: Colors.white);
   }
 
   void checkValues(context) {

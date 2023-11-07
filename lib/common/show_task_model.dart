@@ -1,8 +1,10 @@
+import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 
 import 'package:provider/provider.dart';
 import 'package:todo_app/provider/provider.dart';
+import 'package:todo_app/view/homepage.dart';
 import 'package:todo_app/widgets/date_time_widget.dart';
 import 'package:todo_app/widgets/radio_widget.dart';
 import 'package:todo_app/widgets/textfield_widget.dart';
@@ -13,9 +15,12 @@ class AddNewTask extends StatelessWidget {
   const AddNewTask({
     super.key,
     required this.size,
+    this.index,
+    this.data,
   });
-
+  final int? index;
   final Size size;
+  final QueryDocumentSnapshot<Map<String, dynamic>>? data;
 
   @override
   Widget build(BuildContext context) {
@@ -29,16 +34,25 @@ class AddNewTask extends StatelessWidget {
                 topRight: Radius.circular(25.0))),
         height: size.height * 0.88,
         child: Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
-          const SizedBox(
+          SizedBox(
             width: double.infinity,
-            child: Text(
-              "New Task Todo",
-              textAlign: TextAlign.center,
-              style: TextStyle(
-                  color: Colors.black,
-                  fontWeight: FontWeight.bold,
-                  fontSize: 22),
-            ),
+            child: buttonIndex == index
+                ? const Text(
+                    "Update Your Task",
+                    textAlign: TextAlign.center,
+                    style: TextStyle(
+                        color: Colors.black,
+                        fontWeight: FontWeight.bold,
+                        fontSize: 22),
+                  )
+                : const Text(
+                    "New Todo Task",
+                    textAlign: TextAlign.center,
+                    style: TextStyle(
+                        color: Colors.black,
+                        fontWeight: FontWeight.bold,
+                        fontSize: 22),
+                  ),
           ),
           Divider(
             color: Colors.grey.shade200,
@@ -52,7 +66,8 @@ class AddNewTask extends StatelessWidget {
             height: 6,
           ),
           TextFieldWidget(
-              hintText: "Add Task Name",
+              hintText:
+                  buttonIndex == index ? data!["titleTask"] : "Add Task Name",
               maxLine: 1,
               textController: getdata.titleController),
           const SizedBox(
@@ -63,7 +78,9 @@ class AddNewTask extends StatelessWidget {
             height: 6,
           ),
           TextFieldWidget(
-              hintText: "Add Description",
+              hintText: buttonIndex == index
+                  ? data!["description"]
+                  : "Add Description",
               maxLine: 1,
               textController: getdata.descriptionController),
           const SizedBox(
@@ -109,15 +126,19 @@ class AddNewTask extends StatelessWidget {
                   onTap: () => getdata.setDate(context),
                   iconSelection: CupertinoIcons.calendar,
                   titleText: "Date",
-                  valueText: getdata.dateValue.toString()),
-              SizedBox(
+                  valueText: buttonIndex == index
+                      ? data!["dateTask"]
+                      : getdata.dateValue.toString()),
+              const SizedBox(
                 width: 22,
               ),
               DateTimeWidget(
                   onTap: () => getdata.setTime(context),
                   iconSelection: CupertinoIcons.clock,
                   titleText: "Time",
-                  valueText: getdata.timeValue.toString()),
+                  valueText: buttonIndex == index
+                      ? data!["timeTask"]
+                      : getdata.timeValue.toString()),
             ],
           ),
           const SizedBox(
@@ -129,12 +150,18 @@ class AddNewTask extends StatelessWidget {
               Expanded(
                   child: ElevatedButton(
                       style: ElevatedButton.styleFrom(
-                          foregroundColor: Colors.blue.shade800,
+                          foregroundColor: buttonIndex == index
+                              ? Colors.amber.shade800
+                              : Colors.blue.shade800,
                           backgroundColor: Colors.white,
                           elevation: 0,
                           shape: RoundedRectangleBorder(
                             borderRadius: BorderRadius.circular(8),
-                            side: BorderSide(color: Colors.blue.shade800),
+                            side: BorderSide(
+                              color: buttonIndex == index
+                                  ? Colors.amber.shade800
+                                  : Colors.blue.shade800,
+                            ),
                           ),
                           padding: const EdgeInsets.symmetric(vertical: 15)),
                       onPressed: () {
@@ -148,16 +175,24 @@ class AddNewTask extends StatelessWidget {
                   child: ElevatedButton(
                       style: ElevatedButton.styleFrom(
                           foregroundColor: Colors.white,
-                          backgroundColor: Colors.blue.shade800,
+                          backgroundColor: buttonIndex == index
+                              ? Colors.amber.shade800
+                              : Colors.blue.shade800,
                           elevation: 0,
                           shape: RoundedRectangleBorder(
                             borderRadius: BorderRadius.circular(8),
                           ),
                           padding: const EdgeInsets.symmetric(vertical: 15)),
                       onPressed: () {
-                        getdata.checkValues(context);
+                        if (buttonIndex == index) {
+                          getdata.updateAllTask(context, data!.id);
+                        } else {
+                          getdata.checkValues(context);
+                        }
                       },
-                      child: const Text("Create")))
+                      child: buttonIndex == index
+                          ? const Text("Update")
+                          : const Text("Create")))
             ],
           )
         ]),
