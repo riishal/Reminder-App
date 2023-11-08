@@ -1,132 +1,108 @@
-import 'dart:math';
-
 import 'package:flutter_local_notifications/flutter_local_notifications.dart';
-import 'package:flutter_native_timezone_updated_gradle/flutter_native_timezone.dart';
+import 'package:rxdart/rxdart.dart';
 import 'package:timezone/data/latest.dart' as tz;
 import 'package:timezone/timezone.dart' as tz;
 
-class NotificationHelper {
-  FlutterLocalNotificationsPlugin flutterLocalNotificationsPlugin =
-      FlutterLocalNotificationsPlugin();
+class LocalNotifications {
+  static final FlutterLocalNotificationsPlugin
+      _flutterLocalNotificationsPlugin = FlutterLocalNotificationsPlugin();
+  static final onClickNotification = BehaviorSubject<String>();
 
-  /// Initialize notification
-  initializeNotification() async {
-    _configureLocalTimeZone();
-    const DarwinInitializationSettings initializationSettingsDarwin =
-        DarwinInitializationSettings();
+// on tap on any notification
+  static void onNotificationTap(NotificationResponse notificationResponse) {
+    onClickNotification.add(notificationResponse.payload!);
+  }
 
+// initialize the local notifications
+  static Future init() async {
+    // initialise the plugin. app_icon needs to be a added as a drawable resource to the Android head project
     const AndroidInitializationSettings initializationSettingsAndroid =
-        AndroidInitializationSettings("@mipmap/ic_launcher");
-
-    const InitializationSettings initializationSettings =
+        AndroidInitializationSettings('@mipmap/ic_launcher');
+    final DarwinInitializationSettings initializationSettingsDarwin =
+        DarwinInitializationSettings(
+      onDidReceiveLocalNotification: (id, title, body, payload) => null,
+    );
+    final LinuxInitializationSettings initializationSettingsLinux =
+        LinuxInitializationSettings(defaultActionName: 'Open notification');
+    final InitializationSettings initializationSettings =
         InitializationSettings(
-      iOS: initializationSettingsDarwin,
-      android: initializationSettingsAndroid,
-    );
-    await flutterLocalNotificationsPlugin.initialize(initializationSettings);
+            android: initializationSettingsAndroid,
+            iOS: initializationSettingsDarwin,
+            linux: initializationSettingsLinux);
+    _flutterLocalNotificationsPlugin.initialize(initializationSettings,
+        onDidReceiveNotificationResponse: onNotificationTap,
+        onDidReceiveBackgroundNotificationResponse: onNotificationTap);
   }
 
-  /// Set right date and time for notifications
-  tz.TZDateTime _convertTime(int hour, int minutes) {
-    final tz.TZDateTime now = tz.TZDateTime.now(tz.local);
-    tz.TZDateTime scheduleDate = tz.TZDateTime(
-      tz.local,
-      now.year,
-      now.month,
-      now.day,
-      hour,
-      minutes,
-    );
-    print('///////////date: $scheduleDate');
-    if (scheduleDate.isBefore(now)) {
-      scheduleDate = scheduleDate.add(const Duration(days: 1));
-    }
-    return scheduleDate;
-  }
-
-  Future<void> _configureLocalTimeZone() async {
-    tz.initializeTimeZones();
-    final String timeZone = await FlutterNativeTimezone.getLocalTimezone();
-    tz.setLocalLocation(tz.getLocation(timeZone));
-  }
-
-  /// Scheduled Notification
-  Future scheduledNotification({
-    required int hour,
-    required int minutes,
-    required int id,
-    required String sound,
+  // show a simple notification
+  static Future showSimpleNotification({
+    required String title,
+    required String body,
+    required String payload,
   }) async {
-    // await flutterLocalNotificationsPlugin.zonedSchedule(
-    //   Random().nextInt(10000),
-    //   'It\'s time to drink water!',
-    //   'After drinking, touch the cup to confirm',
-    //   // _convertTime(hour, minutes),
-    //   tz.TZDateTime.now(tz.local).add(const Duration(seconds: 1)),
-    //   NotificationDetails(
-    //     android: AndroidNotificationDetails(
-    //       'your channel id $sound',
-    //       'your channel name',
-    //       channelDescription: 'your channel description',
-    //       importance: Importance.max,
-    //       priority: Priority.high,
-    //       // sound: RawResourceAndroidNotificationSound(sound),
-    //     ),
-    //     iOS: const DarwinNotificationDetails(
-    //         // sound: '$sound.mp3'
-    //         ),
-    //   ),
-    //   androidScheduleMode: AndroidScheduleMode.exactAllowWhileIdle,
-    //   uiLocalNotificationDateInterpretation:
-    //       UILocalNotificationDateInterpretation.absoluteTime,
-    //   matchDateTimeComponents: DateTimeComponents.time,
-    //   payload: 'It could be anything you pass',
-    // );
-    var date = DateTime(2023, 11, 07, 15, 5);
-    int id = Random().nextInt(10000);
-    print(date.toString());
-    print(tz.TZDateTime.parse(tz.local, date.toString()).toString());
-    try {
-      await flutterLocalNotificationsPlugin.zonedSchedule(
-        id,
-        'It\'s time to drink water!',
-        'After drinking, touch the cup to confirm',
-        tz.TZDateTime.parse(tz.local, date.toString()),
-        const NotificationDetails(
-          android: AndroidNotificationDetails(
-            'your channel id',
-            'your channel name',
+    const AndroidNotificationDetails androidNotificationDetails =
+        AndroidNotificationDetails('your channel id', 'your channel name',
             channelDescription: 'your channel description',
-            playSound: false,
-          ),
-        ),
+            importance: Importance.max,
+            priority: Priority.high,
+            ticker: 'ticker');
+    const NotificationDetails notificationDetails =
+        NotificationDetails(android: androidNotificationDetails);
+    await _flutterLocalNotificationsPlugin
+        .show(0, title, body, notificationDetails, payload: payload);
+  }
+
+  // to show periodic notification at regular interval
+  static Future showPeriodicNotifications({
+    required String title,
+    required String body,
+    required String payload,
+  }) async {
+    const AndroidNotificationDetails androidNotificationDetails =
+        AndroidNotificationDetails('channel 2', 'your channel name',
+            channelDescription: 'your channel description',
+            importance: Importance.max,
+            priority: Priority.high,
+            ticker: 'ticker');
+    const NotificationDetails notificationDetails =
+        NotificationDetails(android: androidNotificationDetails);
+    await _flutterLocalNotificationsPlugin.periodicallyShow(
+        1, title, body, RepeatInterval.everyMinute, notificationDetails,
+        payload: payload);
+  }
+
+  // to schedule a local notification
+  static Future showScheduleNotification({
+    required String title,
+    required String body,
+    required String payload,
+  }) async {
+    tz.initializeTimeZones();
+    await _flutterLocalNotificationsPlugin.zonedSchedule(
+        2,
+        title,
+        body,
+        tz.TZDateTime.now(tz.local).add(const Duration(seconds: 5)),
+        const NotificationDetails(
+            android: AndroidNotificationDetails(
+                'channel 3', 'your channel name',
+                channelDescription: 'your channel description',
+                importance: Importance.max,
+                priority: Priority.high,
+                ticker: 'ticker')),
         androidScheduleMode: AndroidScheduleMode.exactAllowWhileIdle,
         uiLocalNotificationDateInterpretation:
             UILocalNotificationDateInterpretation.absoluteTime,
-      );
-      return id;
-    } catch (e) {
-      print("Error at zonedScheduleNotification----------------------------$e");
-      if (e ==
-          "Invalid argument (scheduledDate): Must be a date in the future: Instance of 'TZDateTime'") {
-        print("Select future date");
-      }
-      return -1;
-    }
+        payload: payload);
   }
 
-  /// Request IOS permissions
-  void requestIOSPermissions() {
-    flutterLocalNotificationsPlugin
-        .resolvePlatformSpecificImplementation<
-            IOSFlutterLocalNotificationsPlugin>()
-        ?.requestPermissions(
-          alert: true,
-          badge: true,
-          sound: true,
-        );
+  // close a specific channel notification
+  static Future cancel(int id) async {
+    await _flutterLocalNotificationsPlugin.cancel(id);
   }
 
-  cancelAll() async => await flutterLocalNotificationsPlugin.cancelAll();
-  cancel(id) async => await flutterLocalNotificationsPlugin.cancel(id);
+  // close all the notifications available
+  static Future cancelAll() async {
+    await _flutterLocalNotificationsPlugin.cancelAll();
+  }
 }

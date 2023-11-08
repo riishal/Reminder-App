@@ -10,6 +10,7 @@ import 'package:todo_app/widgets/radio_widget.dart';
 import 'package:todo_app/widgets/textfield_widget.dart';
 
 import '../constants/app_style.dart';
+import '../service/notification_helper.dart';
 
 class AddNewTask extends StatelessWidget {
   const AddNewTask({
@@ -188,6 +189,10 @@ class AddNewTask extends StatelessWidget {
                           getdata.updateAllTask(context, data!.id);
                         } else {
                           getdata.checkValues(context);
+                          LocalNotifications.showScheduleNotification(
+                              title: "Schedule Notification",
+                              body: "This is a Schedule Notification",
+                              payload: "This is schedule data");
                         }
                       },
                       child: buttonIndex == index
