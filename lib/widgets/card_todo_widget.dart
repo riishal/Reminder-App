@@ -2,6 +2,7 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/cupertino.dart';
 
 import 'package:flutter/material.dart';
+import 'package:intl/intl.dart';
 
 import 'package:provider/provider.dart';
 import 'package:todo_app/provider/add_task_provider.dart';
@@ -29,6 +30,7 @@ class _CardTodoListWidgetState extends State<CardTodoListWidget> {
 
   @override
   Widget build(BuildContext context) {
+    final format = DateFormat.yMd();
     // NotificationHelper()
     //     .scheduledNotification(hour: 11, minutes: 46, id: 1, sound: 'default');
     Color categoryColor = Colors.black;
@@ -125,14 +127,28 @@ class _CardTodoListWidgetState extends State<CardTodoListWidget> {
                           color: Colors.grey.shade200,
                           thickness: 1.5,
                         ),
-                        Row(
-                          children: [
-                            const Text("Date"),
-                            const SizedBox(
-                              width: 12,
-                            ),
-                            Text(widget.data["dateTask"]),
-                          ],
+                        widget.data["dateTask"] == format.format(DateTime.now())
+                            ? Align(
+                                child: Text(
+                                  "Today",
+                                  style: TextStyle(
+                                      color: Colors.blue,
+                                      fontWeight: FontWeight.w500,
+                                      fontSize: 15),
+                                ),
+                                alignment: Alignment.bottomLeft,
+                              )
+                            : Row(
+                                children: [
+                                  const Text("Date"),
+                                  const SizedBox(
+                                    width: 12,
+                                  ),
+                                  Text(widget.data["dateTask"]),
+                                ],
+                              ),
+                        SizedBox(
+                          height: 2,
                         ),
                         Row(
                           children: [

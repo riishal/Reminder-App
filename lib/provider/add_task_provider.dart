@@ -47,7 +47,7 @@ class AddTaskProvider extends ChangeNotifier {
         category;
         break;
     }
-    setDateAndTime(context);
+
     notifyListeners();
   }
 

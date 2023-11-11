@@ -36,7 +36,7 @@ class _HomePageState extends State<HomePage>
     var size = MediaQuery.of(context).size;
 
     return Scaffold(
-        backgroundColor: Colors.grey.shade200,
+        backgroundColor: Colors.grey.shade100,
         // appBar: AppBar(
         //   title: Text(
         //     "Todo App",
@@ -46,72 +46,81 @@ class _HomePageState extends State<HomePage>
         //   elevation: 0,
         // ),
         body: SafeArea(
-          child: Column(
-            children: [
-              Row(
-                mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                children: [
-                  Column(
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      children: [
-                        const Text(
-                          'Today\'s Task',
-                          style: TextStyle(
-                              fontSize: 20,
-                              fontWeight: FontWeight.bold,
-                              color: Colors.black),
-                        ),
-                        const SizedBox(
-                          height: 3,
-                        ),
-                        Text(
-                          todayDate.toString(),
-                          style: TextStyle(color: Colors.grey.shade600),
-                        )
-                      ]),
-                  ElevatedButton(
-                      style: ElevatedButton.styleFrom(
-                          backgroundColor: const Color(0xFFD5E8FA),
-                          elevation: 0,
-                          shape: RoundedRectangleBorder(
-                              borderRadius: BorderRadius.circular(8)),
-                          foregroundColor: Colors.blue.shade800),
-                      onPressed: () {
-                        showModalBottomSheet(
-                          isScrollControlled: true,
-                          shape: RoundedRectangleBorder(
-                              borderRadius: BorderRadius.circular(25)),
-                          context: context,
-                          builder: (context) => AddNewTask(
-                            size: size,
+          child: Container(
+            margin: EdgeInsets.symmetric(horizontal: 15, vertical: 10),
+            child: Column(
+              children: [
+                Row(
+                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                  children: [
+                    Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          const Text(
+                            'Today\'s Task',
+                            style: TextStyle(
+                                fontSize: 20,
+                                fontWeight: FontWeight.bold,
+                                color: Colors.black),
                           ),
-                        );
-                      },
-                      child: const Text(
-                        "+ New Task",
-                        style: TextStyle(color: Colors.indigo),
-                      ))
-                ],
-              ),
-              TabBar(
-                controller: tabController,
-                labelColor: Colors.purple,
-                unselectedLabelColor: Colors.purple.shade200,
-                indicatorColor: Colors.purple,
-                indicatorSize: TabBarIndicatorSize.tab,
-                labelPadding: const EdgeInsets.symmetric(vertical: 8),
-                tabs: const [
-                  Text('Upcoming'),
-                  Text('finished'),
-                ],
-              ),
-              Expanded(
-                child: TabBarView(controller: tabController, children: [
-                  taskContainer(size, "upcoming", TaskState.upcoming),
-                  taskContainer(size, "finished", TaskState.finished)
-                ]),
-              )
-            ],
+                          const SizedBox(
+                            height: 3,
+                          ),
+                          Text(
+                            todayDate.toString(),
+                            style: TextStyle(color: Colors.grey.shade600),
+                          )
+                        ]),
+                    ElevatedButton(
+                        style: ElevatedButton.styleFrom(
+                            backgroundColor: const Color(0xFFD5E8FA),
+                            elevation: 0,
+                            shape: RoundedRectangleBorder(
+                                borderRadius: BorderRadius.circular(8)),
+                            foregroundColor: Colors.blue.shade800),
+                        onPressed: () {
+                          showModalBottomSheet(
+                            isScrollControlled: true,
+                            shape: RoundedRectangleBorder(
+                                borderRadius: BorderRadius.circular(25)),
+                            context: context,
+                            builder: (context) => AddNewTask(
+                              size: size,
+                            ),
+                          );
+                        },
+                        child: const Text(
+                          "+ New Task",
+                          style: TextStyle(color: Colors.indigo),
+                        ))
+                  ],
+                ),
+                SizedBox(
+                  height: 10,
+                ),
+                TabBar(
+                  controller: tabController,
+                  labelColor: Colors.blue,
+                  unselectedLabelColor: Colors.blue.shade200,
+                  indicatorColor: Colors.black,
+                  indicatorSize: TabBarIndicatorSize.tab,
+                  labelPadding: const EdgeInsets.symmetric(vertical: 8),
+                  tabs: const [
+                    Text('Upcoming'),
+                    Text('finished'),
+                  ],
+                ),
+                SizedBox(
+                  height: 15,
+                ),
+                Expanded(
+                  child: TabBarView(controller: tabController, children: [
+                    taskContainer(size, "upcoming", TaskState.upcoming),
+                    taskContainer(size, "finished", TaskState.finished)
+                  ]),
+                )
+              ],
+            ),
           ),
         ));
   }
