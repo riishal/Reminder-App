@@ -2,7 +2,7 @@ import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:todo_app/constants/app_style.dart';
-import 'package:todo_app/provider/provider.dart';
+import 'package:todo_app/provider/add_task_provider.dart';
 
 class DateTimeWidget extends StatelessWidget {
   const DateTimeWidget({
@@ -19,7 +19,7 @@ class DateTimeWidget extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return Consumer<Providerdata>(builder: (context, getdata, child) {
+    return Consumer<AddTaskProvider>(builder: (context, getdata, child) {
       return Expanded(
         child: Container(
           child:

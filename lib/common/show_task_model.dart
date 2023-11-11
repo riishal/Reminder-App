@@ -3,14 +3,13 @@ import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 
 import 'package:provider/provider.dart';
-import 'package:todo_app/provider/provider.dart';
+import 'package:todo_app/provider/add_task_provider.dart';
 import 'package:todo_app/view/homepage.dart';
 import 'package:todo_app/widgets/date_time_widget.dart';
 import 'package:todo_app/widgets/radio_widget.dart';
 import 'package:todo_app/widgets/textfield_widget.dart';
 
 import '../constants/app_style.dart';
-import '../service/notification_helper.dart';
 
 class AddNewTask extends StatelessWidget {
   const AddNewTask({
@@ -25,7 +24,7 @@ class AddNewTask extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return Consumer<Providerdata>(builder: (context, getdata, child) {
+    return Consumer<AddTaskProvider>(builder: (context, getdata, child) {
       return Container(
         padding: const EdgeInsets.all(30),
         decoration: const BoxDecoration(
@@ -93,7 +92,7 @@ class AddNewTask extends StatelessWidget {
               Expanded(
                   child: RadioWidget(
                 onchangeValue: () {
-                  getdata.setRadioValue(1);
+                  getdata.setRadioValue(1, context);
                 },
                 valueInput: 1,
                 categColor: Colors.green,
@@ -102,7 +101,7 @@ class AddNewTask extends StatelessWidget {
               Expanded(
                   child: RadioWidget(
                 onchangeValue: () {
-                  getdata.setRadioValue(2);
+                  getdata.setRadioValue(2, context);
                 },
                 valueInput: 2,
                 categColor: Colors.blue.shade200,
@@ -111,7 +110,7 @@ class AddNewTask extends StatelessWidget {
               Expanded(
                   child: RadioWidget(
                 onchangeValue: () {
-                  getdata.setRadioValue(3);
+                  getdata.setRadioValue(3, context);
                 },
                 valueInput: 3,
                 categColor: Colors.amber.shade700,
@@ -127,9 +126,7 @@ class AddNewTask extends StatelessWidget {
                   onTap: () => getdata.setDate(context),
                   iconSelection: CupertinoIcons.calendar,
                   titleText: "Date",
-                  valueText: buttonIndex == index
-                      ? data!["dateTask"]
-                      : getdata.dateValue.toString()),
+                  valueText: getdata.dateValue.toString()),
               const SizedBox(
                 width: 22,
               ),
@@ -137,9 +134,7 @@ class AddNewTask extends StatelessWidget {
                   onTap: () => getdata.setTime(context),
                   iconSelection: CupertinoIcons.clock,
                   titleText: "Time",
-                  valueText: buttonIndex == index
-                      ? data!["timeTask"]
-                      : getdata.timeValue.toString()),
+                  valueText: getdata.timeValue.toString()),
             ],
           ),
           const SizedBox(
@@ -186,13 +181,12 @@ class AddNewTask extends StatelessWidget {
                           padding: const EdgeInsets.symmetric(vertical: 15)),
                       onPressed: () {
                         if (buttonIndex == index) {
-                          getdata.updateAllTask(context, data!.id);
+                          getdata.updateAllTask(
+                            context,
+                            data!.id,
+                          );
                         } else {
                           getdata.checkValues(context);
-                          LocalNotifications.showScheduleNotification(
-                              title: "Schedule Notification",
-                              body: "This is a Schedule Notification",
-                              payload: "This is schedule data");
                         }
                       },
                       child: buttonIndex == index

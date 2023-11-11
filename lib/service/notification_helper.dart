@@ -1,4 +1,9 @@
+import 'dart:math';
+
 import 'package:flutter_local_notifications/flutter_local_notifications.dart';
+import 'package:flutter_native_timezone_updated_gradle/flutter_native_timezone.dart';
+import 'package:intl/intl.dart';
+import 'package:permission_handler/permission_handler.dart';
 import 'package:rxdart/rxdart.dart';
 import 'package:timezone/data/latest.dart' as tz;
 import 'package:timezone/timezone.dart' as tz;
@@ -13,6 +18,14 @@ class LocalNotifications {
     onClickNotification.add(notificationResponse.payload!);
   }
 
+  // request notification permission
+  static Future<void> requestNotificationPermission() async {
+    var status = await Permission.notification.status;
+    if (status.isDenied) {
+      await Permission.notification.request();
+    }
+  }
+
 // initialize the local notifications
   static Future init() async {
     // initialise the plugin. app_icon needs to be a added as a drawable resource to the Android head project
@@ -20,9 +33,9 @@ class LocalNotifications {
         AndroidInitializationSettings('@mipmap/ic_launcher');
     final DarwinInitializationSettings initializationSettingsDarwin =
         DarwinInitializationSettings(
-      onDidReceiveLocalNotification: (id, title, body, payload) => null,
+      onDidReceiveLocalNotification: (id, title, body, payload) {},
     );
-    final LinuxInitializationSettings initializationSettingsLinux =
+    const LinuxInitializationSettings initializationSettingsLinux =
         LinuxInitializationSettings(defaultActionName: 'Open notification');
     final InitializationSettings initializationSettings =
         InitializationSettings(
@@ -71,18 +84,49 @@ class LocalNotifications {
         payload: payload);
   }
 
+  static tz.TZDateTime _tzDateTime(
+      String year, String month, String day, String hour, String minute) {
+    print('Scheduled : Date $year:$month:$day | Time $hour:$minute');
+    final tz.TZDateTime now = tz.TZDateTime.now(tz.local);
+    tz.TZDateTime scheduledDate = tz.TZDateTime.from(
+        DateTime(int.parse(year), int.parse(month), int.parse(day),
+            int.parse(hour), int.parse(minute) - 5),
+        tz.local);
+    if (scheduledDate.isBefore(now)) {
+      scheduledDate = scheduledDate.add(const Duration(days: 1));
+    }
+    return scheduledDate;
+  }
+
   // to schedule a local notification
   static Future showScheduleNotification({
     required String title,
     required String body,
     required String payload,
+    required String time,
+    required String date,
   }) async {
+    List dateList = date.split('/').toList(); // 11/23  [11, 23]
+    String newFormat = DateFormat("HH:mm")
+        .format(DateFormat("hh:mma").parse(time.split(" ").join()));
+    List timeList = newFormat.split(':').toList();
+
     tz.initializeTimeZones();
+    final String timeZone = await FlutterNativeTimezone.getLocalTimezone();
+    print('timezone : $timeZone, ${tz.local}');
+    tz.setLocalLocation(tz.getLocation(timeZone));
     await _flutterLocalNotificationsPlugin.zonedSchedule(
-        2,
+        Random().nextInt(10000),
         title,
         body,
-        tz.TZDateTime.now(tz.local).add(const Duration(seconds: 5)),
+        _tzDateTime(
+          dateList[2],
+          dateList[0],
+          dateList[1],
+          timeList[0],
+          timeList[1],
+        ),
+        // tz.TZDateTime.now(tz.local).add(const Duration(seconds: 1)),
         const NotificationDetails(
             android: AndroidNotificationDetails(
                 'channel 3', 'your channel name',

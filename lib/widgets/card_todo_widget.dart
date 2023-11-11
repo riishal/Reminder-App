@@ -4,7 +4,7 @@ import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 
 import 'package:provider/provider.dart';
-import 'package:todo_app/provider/provider.dart';
+import 'package:todo_app/provider/add_task_provider.dart';
 
 class CardTodoListWidget extends StatefulWidget {
   const CardTodoListWidget({
@@ -20,7 +20,7 @@ class CardTodoListWidget extends StatefulWidget {
 class _CardTodoListWidgetState extends State<CardTodoListWidget> {
   @override
   void initState() {
-    final providerDatas = Provider.of<Providerdata>(context, listen: false);
+    final providerDatas = Provider.of<AddTaskProvider>(context, listen: false);
     // chckConditions(widget.data["timeTask"]);
     providerDatas.chckConditions(
         widget.data["timeTask"], widget.data["timeTask"]);
@@ -47,9 +47,9 @@ class _CardTodoListWidgetState extends State<CardTodoListWidget> {
         break;
     }
 
-    return Consumer<Providerdata>(builder: (context, getdata, child) {
+    return Consumer<AddTaskProvider>(builder: (context, getdata, child) {
       return SizedBox(
-        height: 120,
+        height: 140,
         width: double.infinity,
         // decoration: BoxDecoration(
         //     color: Colors.white, borderRadius: BorderRadius.circular(12)),
@@ -127,7 +127,16 @@ class _CardTodoListWidgetState extends State<CardTodoListWidget> {
                         ),
                         Row(
                           children: [
-                            const Text("Today"),
+                            const Text("Date"),
+                            const SizedBox(
+                              width: 12,
+                            ),
+                            Text(widget.data["dateTask"]),
+                          ],
+                        ),
+                        Row(
+                          children: [
+                            const Text("Time"),
                             const SizedBox(
                               width: 12,
                             ),

@@ -3,19 +3,35 @@ import 'package:fluttertoast/fluttertoast.dart';
 import 'package:intl/intl.dart';
 import 'package:todo_app/constants/alert_message.dart';
 
+import '../core/constents.dart';
 import '../model/todo_model.dart';
+import '../service/notification_helper.dart';
 import '../service/todo_service.dart';
+// 13
 
-class Providerdata extends ChangeNotifier {
+class AddTaskProvider extends ChangeNotifier {
   final titleController = TextEditingController();
   final descriptionController = TextEditingController();
+  TaskState initialTaskState = TaskState.upcoming;
   final format = DateFormat.yMd();
   int radioValue = 0;
-  String dateValue = "dd/mm/yy";
-  String timeValue = "hh : mm";
+  String dateValue = "dd/MM/yyyy";
+  String timeValue = "hh:mma";
   String category = "Other";
 
-  void setRadioValue(groupValue) {
+  String checkTaskState(TaskState state) {
+    switch (state) {
+      case TaskState.upcoming:
+        return "upcoming";
+      case TaskState.finished:
+        return "finished";
+
+      default:
+        return "";
+    }
+  }
+
+  void setRadioValue(groupValue, context) {
     radioValue = groupValue;
     switch (groupValue) {
       case 1:
@@ -31,7 +47,7 @@ class Providerdata extends ChangeNotifier {
         category;
         break;
     }
-
+    setDateAndTime(context);
     notifyListeners();
   }
 
@@ -57,9 +73,10 @@ class Providerdata extends ChangeNotifier {
 
   setDateAndTime(context) {
     final format = DateFormat.yMd();
-    if (dateValue == "dd/mm/yy" && timeValue == "hh : mm") {
+    if (dateValue == "dd/MM/yyyy" && timeValue == "hh:mma") {
       dateValue = format.format(DateTime.now());
-      timeValue = DateFormat.jm().format(DateTime.now());
+      timeValue = DateFormat('hh:mma').format(DateTime.now());
+      print('////////// time value: $timeValue');
     }
     notifyListeners();
   }
@@ -85,21 +102,45 @@ class Providerdata extends ChangeNotifier {
         context: context, initialTime: TimeOfDay.fromDateTime(DateTime.now()));
     if (getTime != null) {
       timeValue = getTime.format(context);
+      print('////////// time value: $timeValue');
     } else {
-      timeValue = DateFormat.jm().format(DateTime.now());
+      timeValue = DateFormat('hh:mma').format(DateTime.now());
+      print('////////// time value: $timeValue');
     }
     notifyListeners();
   }
 
   addTask(context) {
     setDateAndTime(context);
+    String taskState = checkTaskState(initialTaskState);
+    String date = dateValue;
+    String time = timeValue;
+    String dateTime = '$date ${time.split(' ').join()}';
+    print('NewDate: $date ${time.split(' ').join()}');
+    DateTime newDate = DateFormat("dd/MM/yyyy hh:mma").parse(dateTime);
+    print('NewDate: $newDate');
+
+    if (newDate.isAfter(DateTime.now())) {
+      taskState = 'upcoming';
+    } else {
+      taskState = 'finished';
+    }
     TodoService().addNewTask(TodoModel(
+        taskState: taskState,
         isDone: false,
         titleTask: titleController.text,
         description: descriptionController.text,
         category: category,
         dateTask: dateValue,
         timeTask: timeValue));
+
+    // print('/////////date: $dateValue, time: $timeValue');
+    LocalNotifications.showScheduleNotification(
+        title: "Your Task time is right now!",
+        body: titleController.text,
+        payload: descriptionController.text,
+        date: dateValue,
+        time: timeValue);
     showToast("Task added successfully", Colors.blue.shade400);
   }
 
@@ -112,8 +153,10 @@ class Providerdata extends ChangeNotifier {
           context, "Not Updated", "Please Update all the fields");
     } else {
       setDateAndTime(context);
+      String taskState = checkTaskState(initialTaskState);
       TodoService().updateAllTask(
           TodoModel(
+              taskState: taskState,
               isDone: false,
               titleTask: titleController.text,
               description: descriptionController.text,
@@ -121,6 +164,13 @@ class Providerdata extends ChangeNotifier {
               dateTask: dateValue,
               timeTask: timeValue),
           docId);
+      // print('/////////date: $dateValue, time: $timeValue');
+      LocalNotifications.showScheduleNotification(
+          title: "Your Task time is right now!",
+          body: titleController.text,
+          payload: descriptionController.text,
+          date: dateValue,
+          time: timeValue);
       showToast("Task has Updated", Colors.amber.shade700);
       clear(context);
     }
@@ -169,7 +219,7 @@ class Providerdata extends ChangeNotifier {
         '${currtime.hour.toString().padLeft(2, '0')}:${currtime.minute.toString().padLeft(2, '0')}';
     var currentDate = format.format(DateTime.now());
     if (date == currentDate && time == timecurr) {
-      print("Notification");
+      // print("Notification");
     }
   }
 }

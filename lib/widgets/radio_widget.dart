@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 
-import '../provider/provider.dart';
+import '../provider/add_task_provider.dart';
 
 class RadioWidget extends StatelessWidget {
   const RadioWidget({
@@ -18,8 +18,8 @@ class RadioWidget extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    late Providerdata providerdata;
-    providerdata = Provider.of<Providerdata>(context, listen: false);
+    late AddTaskProvider providerdata;
+    providerdata = Provider.of<AddTaskProvider>(context, listen: false);
     return Material(
       child: Theme(
         data: ThemeData(unselectedWidgetColor: categColor),

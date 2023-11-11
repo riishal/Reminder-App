@@ -1,13 +1,15 @@
 import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
-import 'package:todo_app/provider/provider.dart';
+import 'package:todo_app/provider/add_task_provider.dart';
+import 'package:todo_app/provider/task_home_provider.dart';
 import 'package:todo_app/service/notification_helper.dart';
 
 import 'package:todo_app/view/homepage.dart';
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
+  await LocalNotifications.requestNotificationPermission();
   await LocalNotifications.init();
 
   await Firebase.initializeApp();
@@ -19,8 +21,15 @@ class MyApp extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return ChangeNotifierProvider(
-      create: (context) => Providerdata(),
+    return MultiProvider(
+      providers: [
+        ChangeNotifierProvider(
+          create: (context) => AddTaskProvider(),
+        ),
+        ChangeNotifierProvider(
+          create: (context) => TaskHomeProvider(),
+        )
+      ],
       child: MaterialApp(
         debugShowCheckedModeBanner: false,
         home: HomePage(),
