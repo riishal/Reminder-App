@@ -1,4 +1,3 @@
-import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:todo_app/constants/app_style.dart';
@@ -21,42 +20,40 @@ class DateTimeWidget extends StatelessWidget {
   Widget build(BuildContext context) {
     return Consumer<AddTaskProvider>(builder: (context, getdata, child) {
       return Expanded(
-        child: Container(
-          child:
-              Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
-            Text(
-              titleText,
-              style: AppStyle.headingOne,
-            ),
-            SizedBox(
-              height: 6,
-            ),
-            Material(
-              child: Ink(
-                decoration: BoxDecoration(
-                    color: Colors.grey.shade200,
-                    borderRadius: BorderRadius.circular(10)),
-                child: InkWell(
-                  borderRadius: BorderRadius.circular(10),
-                  onTap: () => onTap(),
-                  child: Container(
-                    padding: EdgeInsets.symmetric(horizontal: 12, vertical: 12),
-                    decoration: BoxDecoration(
-                        borderRadius: BorderRadius.circular(8),
-                        color: Colors.transparent),
-                    child: Row(children: [
-                      Icon(iconSelection),
-                      SizedBox(
-                        width: 12,
-                      ),
-                      Text(valueText)
-                    ]),
-                  ),
+        child: Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
+          Text(
+            titleText,
+            style: AppStyle.headingOne,
+          ),
+          const SizedBox(
+            height: 6,
+          ),
+          Material(
+            child: Ink(
+              decoration: BoxDecoration(
+                  color: Colors.grey.shade200,
+                  borderRadius: BorderRadius.circular(10)),
+              child: InkWell(
+                borderRadius: BorderRadius.circular(10),
+                onTap: () => onTap(),
+                child: Container(
+                  padding:
+                      const EdgeInsets.symmetric(horizontal: 12, vertical: 12),
+                  decoration: BoxDecoration(
+                      borderRadius: BorderRadius.circular(8),
+                      color: Colors.transparent),
+                  child: Row(children: [
+                    Icon(iconSelection),
+                    const SizedBox(
+                      width: 12,
+                    ),
+                    Text(valueText)
+                  ]),
                 ),
               ),
-            )
-          ]),
-        ),
+            ),
+          )
+        ]),
       );
     });
   }

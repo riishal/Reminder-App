@@ -11,7 +11,7 @@ class AlertMessage {
             onPressed: () {
               Navigator.pop(context);
             },
-            child: Text("Ok"))
+            child: const Text("Ok"))
       ],
     );
     showDialog(

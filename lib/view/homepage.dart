@@ -21,12 +21,17 @@ class HomePage extends StatefulWidget {
 class _HomePageState extends State<HomePage>
     with SingleTickerProviderStateMixin {
   late TabController tabController;
-  late TaskHomeProvider taskHomeProvider;
+  late AddTaskProvider addTaskProvider;
   @override
   void initState() {
     tabController = TabController(length: 2, vsync: this);
-    taskHomeProvider = Provider.of<TaskHomeProvider>(context, listen: false);
+    addTaskProvider = Provider.of<AddTaskProvider>(context, listen: false);
     super.initState();
+  }
+
+  Future<void> refresh() async {
+    FirebaseFirestore.instance.collection('todoApp').get();
+    return Future.delayed(const Duration(seconds: 2));
   }
 
   @override
@@ -36,7 +41,7 @@ class _HomePageState extends State<HomePage>
     var size = MediaQuery.of(context).size;
 
     return Scaffold(
-        backgroundColor: Colors.grey.shade100,
+        backgroundColor: Colors.grey.shade200,
         // appBar: AppBar(
         //   title: Text(
         //     "Todo App",
@@ -45,9 +50,10 @@ class _HomePageState extends State<HomePage>
         //   backgroundColor: Colors.white,
         //   elevation: 0,
         // ),
+
         body: SafeArea(
           child: Container(
-            margin: EdgeInsets.symmetric(horizontal: 15, vertical: 10),
+            margin: const EdgeInsets.symmetric(horizontal: 15, vertical: 10),
             child: Column(
               children: [
                 Row(
@@ -95,22 +101,37 @@ class _HomePageState extends State<HomePage>
                         ))
                   ],
                 ),
-                SizedBox(
-                  height: 10,
+                const SizedBox(
+                  height: 15,
                 ),
-                TabBar(
-                  controller: tabController,
-                  labelColor: Colors.blue,
-                  unselectedLabelColor: Colors.blue.shade200,
-                  indicatorColor: Colors.black,
-                  indicatorSize: TabBarIndicatorSize.tab,
-                  labelPadding: const EdgeInsets.symmetric(vertical: 8),
-                  tabs: const [
-                    Text('Upcoming'),
-                    Text('finished'),
-                  ],
+                Container(
+                  decoration: BoxDecoration(
+                    color: Colors.white,
+                    borderRadius: BorderRadius.circular(30),
+                  ),
+                  child: TabBar(
+                    indicator: BoxDecoration(
+                        borderRadius:
+                            BorderRadius.circular(30), // Creates border
+                        color: Colors.black),
+                    controller: tabController,
+                    unselectedLabelColor: Colors.black,
+                    labelColor: Colors.white,
+                    indicatorSize: TabBarIndicatorSize.tab,
+                    labelPadding: const EdgeInsets.symmetric(vertical: 8),
+                    tabs: [
+                      Text(
+                        'Upcoming Tasks',
+                        // style: TextStyle(color: Colors.blue)
+                      ),
+                      Text(
+                        'Completed Tasks',
+                        // style: TextStyle(color: Colors.red.shade500),
+                      ),
+                    ],
+                  ),
                 ),
-                SizedBox(
+                const SizedBox(
                   height: 15,
                 ),
                 Expanded(
@@ -135,57 +156,74 @@ class _HomePageState extends State<HomePage>
           builder: (context, snapshot) {
             if (snapshot.hasData) {
               final documents = snapshot.data!.docs;
-              taskHomeProvider.checkTaskConditions(
-                  snapshot.data!.docs, taskState);
+              // getdata.checkTaskConditions(snapshot.data!.docs, taskState);
 
-              return Container(
+              return SizedBox(
                 height: 500,
-                child: ListView.separated(
-                    itemBuilder: (context, index) {
-                      QueryDocumentSnapshot<Map<String, dynamic>> data =
-                          snapshot.data!.docs[index];
-                      return Material(
-                        color: Colors.transparent,
-                        child: Ink(
-                          decoration: BoxDecoration(
-                              color: Colors.white,
-                              borderRadius: BorderRadius.circular(12)),
-                          child: InkWell(
-                              borderRadius: BorderRadius.circular(12),
-                              onTap: () {
-                                buttonIndex = index;
+                child: RefreshIndicator(
+                  onRefresh: refresh,
+                  color: Colors.white,
+                  backgroundColor: Colors.black,
+                  strokeWidth: 4.0,
+                  child: ListView.separated(
+                      itemBuilder: (context, index) {
+                        QueryDocumentSnapshot<Map<String, dynamic>> data =
+                            snapshot.data!.docs[index];
+                        addTaskProvider.updateTimeDateState(
+                            data["dateTask"], data["timeTask"], data.id);
+                        return Material(
+                          color: Colors.transparent,
+                          child: Ink(
+                            decoration: BoxDecoration(
+                                boxShadow: [
+                                  BoxShadow(
+                                      color: data["taskState"] == "finished"
+                                          ? Colors.red
+                                          : Colors.black,
+                                      blurRadius: 1,
+                                      offset: Offset(10, 10))
+                                ],
+                                color: Colors.white,
+                                borderRadius: BorderRadius.circular(12)),
+                            child: InkWell(
+                                borderRadius: BorderRadius.circular(12),
+                                onTap: () {
+                                  buttonIndex = index;
 
-                                showModalBottomSheet(
-                                  isScrollControlled: true,
-                                  shape: RoundedRectangleBorder(
-                                      borderRadius: BorderRadius.circular(25)),
-                                  context: context,
-                                  builder: (context) => AddNewTask(
-                                    size: size,
-                                    index: index,
-                                    data: data,
-                                  ),
-                                );
-                                // print(buttonIndex);
-                                // getdata
-                                //     .updateRadioValue(data["category"]);
-                                // getdata.titleController.text =
-                                //     data["titleTask"];
-                                // getdata.descriptionController.text =
-                                //     data["description"];
-                                // getdata.dateValue =
-                                //     data["dateTask"].toString();
-                                // getdata.timeValue =
-                                //     data["timeTask"].toString();
-                              },
-                              child: CardTodoListWidget(data: data)),
-                        ),
-                      );
-                    },
-                    separatorBuilder: (context, index) => const SizedBox(
-                          height: 15,
-                        ),
-                    itemCount: documents.length),
+                                  showModalBottomSheet(
+                                    isScrollControlled: true,
+                                    shape: RoundedRectangleBorder(
+                                        borderRadius:
+                                            BorderRadius.circular(25)),
+                                    context: context,
+                                    builder: (context) => AddNewTask(
+                                      size: size,
+                                      index: index,
+                                      data: data,
+                                    ),
+                                  );
+
+                                  // print(buttonIndex);
+                                  addTaskProvider
+                                      .updateRadioValue(data["category"]);
+                                  addTaskProvider.titleController.text =
+                                      data["titleTask"];
+                                  addTaskProvider.descriptionController.text =
+                                      data["description"];
+                                  addTaskProvider.dateValue =
+                                      data["dateTask"].toString();
+                                  addTaskProvider.timeValue =
+                                      data["timeTask"].toString();
+                                },
+                                child: CardTodoListWidget(data: data)),
+                          ),
+                        );
+                      },
+                      separatorBuilder: (context, index) => const SizedBox(
+                            height: 15,
+                          ),
+                      itemCount: documents.length),
+                ),
               );
             }
             return const Center(child: CircularProgressIndicator());

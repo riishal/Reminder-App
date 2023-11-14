@@ -12,8 +12,18 @@ class TodoService {
     todoCollection.doc(docId).update(todoModel.toMap());
   }
 
-  void updateTask(String? docId, bool? value) {
+  void updateTask(
+    String? docId,
+    bool? value,
+  ) {
     todoCollection.doc(docId).update({"isDone": value});
+  }
+
+  void updateTaskState1(
+    String? docId,
+    String taskState,
+  ) {
+    todoCollection.doc(docId).update({"taskState": taskState});
   }
 
   void deleteTask(String docId) {

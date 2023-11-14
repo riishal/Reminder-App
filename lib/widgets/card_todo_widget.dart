@@ -6,6 +6,7 @@ import 'package:intl/intl.dart';
 
 import 'package:provider/provider.dart';
 import 'package:todo_app/provider/add_task_provider.dart';
+import 'package:todo_app/widgets/day_widget.dart';
 
 class CardTodoListWidget extends StatefulWidget {
   const CardTodoListWidget({
@@ -22,7 +23,7 @@ class _CardTodoListWidgetState extends State<CardTodoListWidget> {
   @override
   void initState() {
     final providerDatas = Provider.of<AddTaskProvider>(context, listen: false);
-    // chckConditions(widget.data["timeTask"]);
+
     providerDatas.chckConditions(
         widget.data["timeTask"], widget.data["timeTask"]);
     super.initState();
@@ -31,8 +32,7 @@ class _CardTodoListWidgetState extends State<CardTodoListWidget> {
   @override
   Widget build(BuildContext context) {
     final format = DateFormat.yMd();
-    // NotificationHelper()
-    //     .scheduledNotification(hour: 11, minutes: 46, id: 1, sound: 'default');
+
     Color categoryColor = Colors.black;
 
     final category = widget.data["category"];
@@ -59,7 +59,9 @@ class _CardTodoListWidgetState extends State<CardTodoListWidget> {
           Container(
             width: 20,
             decoration: BoxDecoration(
-                color: categoryColor,
+                color: widget.data["taskState"] == "finished"
+                    ? Colors.red
+                    : categoryColor,
                 borderRadius: const BorderRadius.only(
                     topLeft: Radius.circular(12),
                     bottomLeft: Radius.circular(12))),
@@ -115,63 +117,76 @@ class _CardTodoListWidgetState extends State<CardTodoListWidget> {
                             // .doc(data.id)
                             // .update({"isDone": value});
 
-                            print('clicked');
+                            // print('clicked');
                           }),
                     ),
                   ),
                   Transform.translate(
                     offset: const Offset(0, -12),
-                    child: Container(
-                      child: Column(children: [
-                        Divider(
-                          color: Colors.grey.shade200,
-                          thickness: 1.5,
-                        ),
-                        widget.data["dateTask"] == format.format(DateTime.now())
-                            ? Align(
-                                child: Text(
-                                  "Today",
-                                  style: TextStyle(
-                                      color: Colors.blue,
-                                      fontWeight: FontWeight.w500,
-                                      fontSize: 15),
-                                ),
-                                alignment: Alignment.bottomLeft,
-                              )
-                            : Row(
-                                children: [
-                                  const Text("Date"),
-                                  const SizedBox(
-                                    width: 12,
-                                  ),
-                                  Text(widget.data["dateTask"]),
-                                ],
-                              ),
-                        SizedBox(
-                          height: 2,
-                        ),
-                        Row(
-                          children: [
-                            const Text("Time"),
-                            const SizedBox(
-                              width: 12,
-                            ),
-                            Text(widget.data["timeTask"]),
-                          ],
-                        ),
-                        Row(
-                          mainAxisAlignment: MainAxisAlignment.end,
-                          children: [
-                            Text(
-                              widget.data["category"],
-                              style: TextStyle(
-                                  color: categoryColor,
-                                  fontWeight: FontWeight.bold),
-                            )
-                          ],
-                        )
-                      ]),
-                    ),
+                    child: Column(children: [
+                      Divider(
+                        color: Colors.grey.shade200,
+                        thickness: 1.5,
+                      ),
+                      widget.data["dateTask"] == format.format(DateTime.now())
+                          ? const DayWidget(day: "Today", color: Colors.blue)
+                          : widget.data["dateTask"] ==
+                                  format.format(DateTime.now()
+                                      .add(const Duration(days: 1)))
+                              ? const DayWidget(
+                                  day: "Tomorrow", color: Colors.blue)
+                              : widget.data["dateTask"] ==
+                                      format.format(DateTime.now()
+                                          .add(const Duration(days: -1)))
+                                  ? const DayWidget(
+                                      day: "Yesterday", color: Colors.red)
+                                  : Row(
+                                      children: [
+                                        const Text(
+                                          "Date :",
+                                          style: TextStyle(
+                                              fontWeight: FontWeight.w500),
+                                        ),
+                                        const SizedBox(
+                                          width: 4,
+                                        ),
+                                        Text(
+                                          widget.data["dateTask"],
+                                          style: const TextStyle(
+                                              fontWeight: FontWeight.w500),
+                                        ),
+                                      ],
+                                    ),
+                      const SizedBox(
+                        height: 2,
+                      ),
+                      Row(
+                        children: [
+                          const Text(
+                            "Time :",
+                            style: TextStyle(fontWeight: FontWeight.w500),
+                          ),
+                          const SizedBox(
+                            width: 4,
+                          ),
+                          Text(
+                            widget.data["timeTask"],
+                            style: const TextStyle(fontWeight: FontWeight.w500),
+                          ),
+                        ],
+                      ),
+                      Row(
+                        mainAxisAlignment: MainAxisAlignment.end,
+                        children: [
+                          Text(
+                            widget.data["category"],
+                            style: TextStyle(
+                                color: categoryColor,
+                                fontWeight: FontWeight.bold),
+                          )
+                        ],
+                      )
+                    ]),
                   )
                 ]),
           ))

@@ -26,7 +26,7 @@ class RadioWidget extends StatelessWidget {
         child: RadioListTile(
           contentPadding: EdgeInsets.zero,
           title: Transform.translate(
-              offset: Offset(-22, 0),
+              offset: const Offset(-22, 0),
               child: Text(
                 titleRadio,
                 style:

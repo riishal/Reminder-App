@@ -71,6 +71,7 @@ class AddTaskProvider extends ChangeNotifier {
     notifyListeners();
   }
 
+//date time format changing
   setDateAndTime(context) {
     final format = DateFormat.yMd();
     if (dateValue == "dd/MM/yyyy" && timeValue == "hh:mma") {
@@ -110,18 +111,22 @@ class AddTaskProvider extends ChangeNotifier {
     notifyListeners();
   }
 
+//adding firestore database
   addTask(context) {
     setDateAndTime(context);
     String taskState = checkTaskState(initialTaskState);
-    String date = dateValue;
+    var date = dateValue.split('/').toList();
+    var dateExp = '${date[1]}/${date[0]}/${date[2]}';
     String time = timeValue;
-    String dateTime = '$date ${time.split(' ').join()}';
-    print('NewDate: $date ${time.split(' ').join()}');
+    String dateTime = '$dateExp ${time.split(' ').join()}';
+    print('NewDate: $dateExp ${time.split(' ').join()}');
     DateTime newDate = DateFormat("dd/MM/yyyy hh:mma").parse(dateTime);
-    print('NewDate: $newDate');
+    print('Date: ${DateTime.now()}');
+    print('newDate: $newDate');
 
     if (newDate.isAfter(DateTime.now())) {
-      taskState = 'upcoming';
+      taskState =
+          'upcoming'; // 2023-11-13 14:30:00.579496 2023-12-11 14:26:00.000
     } else {
       taskState = 'finished';
     }
@@ -134,15 +139,28 @@ class AddTaskProvider extends ChangeNotifier {
         dateTask: dateValue,
         timeTask: timeValue));
 
-    // print('/////////date: $dateValue, time: $timeValue');
+    //5 minutes before notification
+    //5 minutes before notification
     LocalNotifications.showScheduleNotification(
-        title: "Your Task time is right now!",
-        body: titleController.text,
+        minute: 5,
+        title: "Get ready! ${titleController.text} is scheduled soon.",
+        body:
+            "This is a friendly reminder for your task Scheduled Time:$timeValue",
         payload: descriptionController.text,
         date: dateValue,
         time: timeValue);
-    showToast("Task added successfully", Colors.blue.shade400);
+    //Current time notification
+    LocalNotifications.showScheduleNotification(
+        minute: 0,
+        title: "Your Time is Now!",
+        body: "Time is ticking! Do your ${titleController.text} task now.",
+        payload: descriptionController.text,
+        date: dateValue,
+        time: timeValue);
+    notifyListeners();
   }
+
+//updating firestore all tasks
 
   updateAllTask(context, String docId) {
     // print(object);
@@ -154,6 +172,21 @@ class AddTaskProvider extends ChangeNotifier {
     } else {
       setDateAndTime(context);
       String taskState = checkTaskState(initialTaskState);
+      var date = dateValue.split('/').toList();
+      var dateExp = '${date[1]}/${date[0]}/${date[2]}';
+      String time = timeValue;
+      String dateTime = '$dateExp ${time.split(' ').join()}';
+      print('NewDate: $dateExp ${time.split(' ').join()}');
+      DateTime newDate = DateFormat("dd/MM/yyyy hh:mma").parse(dateTime);
+      print('Date: ${DateTime.now()}');
+      print('newDate: $newDate');
+
+      if (newDate.isAfter(DateTime.now())) {
+        taskState = 'upcoming';
+      } else {
+        taskState = 'finished';
+      }
+
       TodoService().updateAllTask(
           TodoModel(
               taskState: taskState,
@@ -164,10 +197,20 @@ class AddTaskProvider extends ChangeNotifier {
               dateTask: dateValue,
               timeTask: timeValue),
           docId);
-      // print('/////////date: $dateValue, time: $timeValue');
+      //5 minutes before notification
       LocalNotifications.showScheduleNotification(
-          title: "Your Task time is right now!",
-          body: titleController.text,
+          minute: 5,
+          title: "Get ready! ${titleController.text} is scheduled soon.",
+          body:
+              "This is a friendly reminder for your task Scheduled Time:$timeValue",
+          payload: descriptionController.text,
+          date: dateValue,
+          time: timeValue);
+      //Current time notification
+      LocalNotifications.showScheduleNotification(
+          minute: 0,
+          title: "Your Time is Now!",
+          body: "Time is ticking! Do your ${titleController.text} task now.",
           payload: descriptionController.text,
           date: dateValue,
           time: timeValue);
@@ -180,8 +223,8 @@ class AddTaskProvider extends ChangeNotifier {
     titleController.clear();
     descriptionController.clear();
     radioValue = 0;
-    dateValue = "dd/mm/yy";
-    timeValue = "hh : mm";
+    dateValue = "dd/MM/yyyy";
+    timeValue = "hh:mma";
     category = "Other";
 
     Navigator.pop(context);
@@ -221,5 +264,21 @@ class AddTaskProvider extends ChangeNotifier {
     if (date == currentDate && time == timecurr) {
       // print("Notification");
     }
+  }
+
+  updateTimeDateState(String date1, String time1, String docId) {
+    var date = date1.split('/').toList();
+    var dateExp = '${date[1]}/${date[0]}/${date[2]}';
+    String time = time1;
+    String dateTime = '$dateExp ${time.split(' ').join()}';
+    print('NewDate: $dateExp ${time.split(' ').join()}');
+    DateTime newDate = DateFormat("dd/MM/yyyy hh:mma").parse(dateTime);
+    print('Date: ${DateTime.now()}');
+    print('newDate: $newDate');
+    if (newDate.isBefore(DateTime.now())) {
+      print('equal time: $docId');
+      TodoService().updateTaskState1(docId, "finished");
+    }
+    // notifyListeners();
   }
 }
