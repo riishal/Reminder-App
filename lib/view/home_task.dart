@@ -11,14 +11,14 @@ import '../provider/task_home_provider.dart';
 
 int buttonIndex = 0;
 
-class HomePage extends StatefulWidget {
-  const HomePage({super.key});
+class HomeTask extends StatefulWidget {
+  const HomeTask({super.key});
 
   @override
-  State<HomePage> createState() => _HomePageState();
+  State<HomeTask> createState() => _HomeTaskState();
 }
 
-class _HomePageState extends State<HomePage>
+class _HomeTaskState extends State<HomeTask>
     with SingleTickerProviderStateMixin {
   late TabController tabController;
   late AddTaskProvider addTaskProvider;
@@ -77,28 +77,6 @@ class _HomePageState extends State<HomePage>
                             style: TextStyle(color: Colors.grey.shade600),
                           )
                         ]),
-                    ElevatedButton(
-                        style: ElevatedButton.styleFrom(
-                            backgroundColor: const Color(0xFFD5E8FA),
-                            elevation: 0,
-                            shape: RoundedRectangleBorder(
-                                borderRadius: BorderRadius.circular(8)),
-                            foregroundColor: Colors.blue.shade800),
-                        onPressed: () {
-                          showModalBottomSheet(
-                            isScrollControlled: true,
-                            shape: RoundedRectangleBorder(
-                                borderRadius: BorderRadius.circular(25)),
-                            context: context,
-                            builder: (context) => AddNewTask(
-                              size: size,
-                            ),
-                          );
-                        },
-                        child: const Text(
-                          "+ New Task",
-                          style: TextStyle(color: Colors.indigo),
-                        ))
                   ],
                 ),
                 const SizedBox(
@@ -147,6 +125,10 @@ class _HomePageState extends State<HomePage>
   }
 
   Widget taskContainer(Size size, String state, TaskState taskState) {
+    var time = FirebaseFirestore.instance.collection('todoApp').get();
+    time.then(
+      (value) => print('${value.docs[0]['dateTask']}'),
+    );
     return Consumer<TaskHomeProvider>(builder: (context, getdata, child) {
       return StreamBuilder(
           stream: FirebaseFirestore.instance

@@ -82,7 +82,7 @@ class AddTaskProvider extends ChangeNotifier {
     notifyListeners();
   }
 
-  void setDate(BuildContext context) async {
+  setDate(BuildContext context) async {
     final getValue = await showDatePicker(
         context: context,
         initialDate: DateTime.now(),
