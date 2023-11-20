@@ -85,11 +85,11 @@ class LocalNotifications {
   }
 
   static tz.TZDateTime _tzDateTime(String year, String month, String day,
-      String hour, String minute, int minut) {
+      String hour, String minute, int minut, int dayy) {
     print('Scheduled : Date $year:$month:$day | Time $hour:$minute');
     final tz.TZDateTime now = tz.TZDateTime.now(tz.local);
     tz.TZDateTime scheduledDate = tz.TZDateTime.from(
-        DateTime(int.parse(year), int.parse(month), int.parse(day),
+        DateTime(int.parse(year), int.parse(month), int.parse(day) - dayy,
             int.parse(hour), int.parse(minute) - minut),
         tz.local);
     if (scheduledDate.isBefore(now)) {
@@ -105,7 +105,8 @@ class LocalNotifications {
       required String payload,
       required String time,
       required String date,
-      required int minute}) async {
+      required int minute,
+      required int dayy}) async {
     List dateList = date.split('/').toList(); // 11/23  [11, 23]
     String newFormat = DateFormat("HH:mm")
         .format(DateFormat("hh:mma").parse(time.split(" ").join()));
@@ -120,7 +121,7 @@ class LocalNotifications {
         title,
         body,
         _tzDateTime(dateList[2], dateList[0], dateList[1], timeList[0],
-            timeList[1], minute),
+            timeList[1], minute, dayy),
         // tz.TZDateTime.now(tz.local).add(const Duration(seconds: 1)),
         const NotificationDetails(
             android: AndroidNotificationDetails(

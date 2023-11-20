@@ -1,7 +1,9 @@
 import 'package:flutter/material.dart';
+import 'package:provider/provider.dart';
 import 'package:todo_app/view/home_task.dart';
 
 import '../common/show_task_model.dart';
+import '../provider/add_task_provider.dart';
 import 'calendar_task.dart';
 
 class HomeScreen extends StatefulWidget {
@@ -12,10 +14,12 @@ class HomeScreen extends StatefulWidget {
 }
 
 class _HomeScreenState extends State<HomeScreen> {
+  late AddTaskProvider addTaskProvider;
   int _currentIndex = 0;
   bool _isLoading = true;
   @override
   void initState() {
+    addTaskProvider = Provider.of<AddTaskProvider>(context, listen: false);
     // TODO: implement initState
     super.initState();
   }
@@ -53,6 +57,7 @@ class _HomeScreenState extends State<HomeScreen> {
         onTap: (index) {
           setState(() {
             _currentIndex = index;
+            addTaskProvider.dateValue;
           });
         },
         items: const [

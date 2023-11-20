@@ -125,10 +125,10 @@ class _HomeTaskState extends State<HomeTask>
   }
 
   Widget taskContainer(Size size, String state, TaskState taskState) {
-    var time = FirebaseFirestore.instance.collection('todoApp').get();
-    time.then(
-      (value) => print('${value.docs[0]['dateTask']}'),
-    );
+    // var time = FirebaseFirestore.instance.collection('todoApp').get();
+    // time.then(
+    //   (value) => print('${value.docs[0]['timeTask']}'),
+    // );
     return Consumer<TaskHomeProvider>(builder: (context, getdata, child) {
       return StreamBuilder(
           stream: FirebaseFirestore.instance
@@ -196,6 +196,10 @@ class _HomeTaskState extends State<HomeTask>
                                       data["dateTask"].toString();
                                   addTaskProvider.timeValue =
                                       data["timeTask"].toString();
+                                  addTaskProvider.updateOnCheckedOnedayBefore(
+                                      data["isOnedayChecked"]);
+                                  addTaskProvider.updateOnCheckedTenMinutes(
+                                      data["isTenMinutesChecked"]);
                                 },
                                 child: CardTodoListWidget(data: data)),
                           ),

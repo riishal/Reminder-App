@@ -1,3 +1,5 @@
+import 'dart:async';
+
 import 'package:flutter/material.dart';
 import 'package:fluttertoast/fluttertoast.dart';
 import 'package:intl/intl.dart';
@@ -10,6 +12,12 @@ import '../service/todo_service.dart';
 // 13
 
 class AddTaskProvider extends ChangeNotifier {
+  StreamController dateController = StreamController.broadcast();
+  Sink get dateSink => dateController.sink;
+  Stream get dateStream => dateController.stream;
+  bool isTenMinutesChecked = false;
+  bool isOneDayBeforeChecked = false;
+
   final titleController = TextEditingController();
   final descriptionController = TextEditingController();
   TaskState initialTaskState = TaskState.upcoming;
@@ -18,6 +26,8 @@ class AddTaskProvider extends ChangeNotifier {
   String dateValue = "dd/MM/yyyy";
   String timeValue = "hh:mma";
   String category = "Other";
+  int tenminutesValue = 0;
+  int ondayValue = 0;
 
   String checkTaskState(TaskState state) {
     switch (state) {
@@ -29,6 +39,37 @@ class AddTaskProvider extends ChangeNotifier {
       default:
         return "";
     }
+  }
+
+  onCheckedTenMinutes(value) {
+    isTenMinutesChecked = value;
+    if (isTenMinutesChecked == true) {
+      tenminutesValue = 10;
+    }
+
+    notifyListeners();
+  }
+
+  updateOnCheckedTenMinutes(value) {
+    if (value == 10) {
+      isTenMinutesChecked = true;
+    }
+    notifyListeners();
+  }
+
+  updateOnCheckedOnedayBefore(value) {
+    if (value == 1) {
+      isOneDayBeforeChecked = true;
+    }
+    notifyListeners();
+  }
+
+  onCheckedOneDayBefore(value) {
+    isOneDayBeforeChecked = value;
+    if (isOneDayBeforeChecked == true) {
+      ondayValue = 1;
+    }
+    notifyListeners();
   }
 
   void setRadioValue(groupValue, context) {
@@ -111,6 +152,18 @@ class AddTaskProvider extends ChangeNotifier {
     notifyListeners();
   }
 
+//showing calendar tasks
+  getTask(DateTime selectedDate) async {
+    var todos = await TodoService().getTasks(selectedDate);
+    dateSink.add(todos);
+  }
+
+  //set calender date
+  void setCalendarDate(DateTime selectedDate) {
+    dateValue = format.format(selectedDate);
+    notifyListeners();
+  }
+
 //adding firestore database
   addTask(context) {
     setDateAndTime(context);
@@ -131,6 +184,8 @@ class AddTaskProvider extends ChangeNotifier {
       taskState = 'finished';
     }
     TodoService().addNewTask(TodoModel(
+        isOnedayChecked: ondayValue,
+        isTenMinutesChecked: tenminutesValue,
         taskState: taskState,
         isDone: false,
         titleTask: titleController.text,
@@ -139,10 +194,11 @@ class AddTaskProvider extends ChangeNotifier {
         dateTask: dateValue,
         timeTask: timeValue));
 
-    //5 minutes before notification
-    //5 minutes before notification
+    //onday before notification
+    //10 minutes before notification
     LocalNotifications.showScheduleNotification(
-        minute: 5,
+        dayy: ondayValue,
+        minute: tenminutesValue,
         title: "Get ready! ${titleController.text} is scheduled soon.",
         body:
             "This is a friendly reminder for your task Scheduled Time:$timeValue",
@@ -151,6 +207,7 @@ class AddTaskProvider extends ChangeNotifier {
         time: timeValue);
     //Current time notification
     LocalNotifications.showScheduleNotification(
+        dayy: 0,
         minute: 0,
         title: "Your Time is Now!",
         body: "Time is ticking! Do your ${titleController.text} task now.",
@@ -158,6 +215,8 @@ class AddTaskProvider extends ChangeNotifier {
         date: dateValue,
         time: timeValue);
     notifyListeners();
+    showToast("Task has Updated", Colors.amber.shade700);
+    clear(context);
   }
 
 //updating firestore all tasks
@@ -189,6 +248,8 @@ class AddTaskProvider extends ChangeNotifier {
 
       TodoService().updateAllTask(
           TodoModel(
+              isOnedayChecked: ondayValue,
+              isTenMinutesChecked: tenminutesValue,
               taskState: taskState,
               isDone: false,
               titleTask: titleController.text,
@@ -199,7 +260,8 @@ class AddTaskProvider extends ChangeNotifier {
           docId);
       //5 minutes before notification
       LocalNotifications.showScheduleNotification(
-          minute: 5,
+          dayy: ondayValue,
+          minute: tenminutesValue,
           title: "Get ready! ${titleController.text} is scheduled soon.",
           body:
               "This is a friendly reminder for your task Scheduled Time:$timeValue",
@@ -208,14 +270,14 @@ class AddTaskProvider extends ChangeNotifier {
           time: timeValue);
       //Current time notification
       LocalNotifications.showScheduleNotification(
+          dayy: 0,
           minute: 0,
           title: "Your Time is Now!",
           body: "Time is ticking! Do your ${titleController.text} task now.",
           payload: descriptionController.text,
           date: dateValue,
           time: timeValue);
-      showToast("Task has Updated", Colors.amber.shade700);
-      clear(context);
+      showToast("New Task Added", Colors.blue.shade700);
     }
   }
 
@@ -226,6 +288,8 @@ class AddTaskProvider extends ChangeNotifier {
     dateValue = "dd/MM/yyyy";
     timeValue = "hh:mma";
     category = "Other";
+    isOneDayBeforeChecked = false;
+    isTenMinutesChecked = false;
 
     Navigator.pop(context);
   }
