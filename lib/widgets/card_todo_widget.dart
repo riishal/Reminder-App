@@ -146,10 +146,10 @@ class _CardTodoListWidgetState extends State<CardTodoListWidget> {
                                         "Are sure want to Complete\nyour task?",
                                     context: context,
                                     onTap: () {
-                                      getdata.updateTimeDateState(
-                                          widget.data["dateTask"],
-                                          widget.data["timeTask"],
-                                          widget.data.id);
+                                      // getdata.updateTimeDateState(
+                                      //     widget.data["dateTask"],
+                                      //     widget.data["timeTask"],
+                                      //     widget.data.id);
                                       Navigator.pop(context);
                                     },
                                     onCancel: () async {
