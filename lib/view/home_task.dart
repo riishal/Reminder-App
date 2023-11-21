@@ -41,7 +41,7 @@ class _HomeTaskState extends State<HomeTask>
     var size = MediaQuery.of(context).size;
 
     return Scaffold(
-        backgroundColor: Colors.grey.shade200,
+        backgroundColor: Colors.grey.shade100,
         // appBar: AppBar(
         //   title: Text(
         //     "Todo App",
@@ -88,10 +88,16 @@ class _HomeTaskState extends State<HomeTask>
                     borderRadius: BorderRadius.circular(30),
                   ),
                   child: TabBar(
+                    onTap: (index) {
+                      setState(() {
+                        tabController.index = index;
+                      });
+                    },
                     indicator: BoxDecoration(
-                        borderRadius:
-                            BorderRadius.circular(30), // Creates border
-                        color: Colors.black),
+                      borderRadius: BorderRadius.circular(30), // Creates border
+                      color:
+                          tabController.index == 1 ? Colors.red : Colors.blue,
+                    ),
                     controller: tabController,
                     unselectedLabelColor: Colors.black,
                     labelColor: Colors.white,

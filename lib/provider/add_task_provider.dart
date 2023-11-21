@@ -12,6 +12,8 @@ import '../service/todo_service.dart';
 // 13
 
 class AddTaskProvider extends ChangeNotifier {
+  bool visibility = false;
+  bool reminderVisibility = false;
   StreamController dateController = StreamController.broadcast();
   Sink get dateSink => dateController.sink;
   Stream get dateStream => dateController.stream;
@@ -39,6 +41,16 @@ class AddTaskProvider extends ChangeNotifier {
       default:
         return "";
     }
+  }
+
+  setVisibility() {
+    visibility = !visibility;
+    notifyListeners();
+  }
+
+  setReminderVisibility() {
+    reminderVisibility = !reminderVisibility;
+    notifyListeners();
   }
 
   onCheckedTenMinutes(value) {
@@ -214,9 +226,6 @@ class AddTaskProvider extends ChangeNotifier {
         payload: descriptionController.text,
         date: dateValue,
         time: timeValue);
-    notifyListeners();
-    showToast("Task has Updated", Colors.amber.shade700);
-    clear(context);
   }
 
 //updating firestore all tasks
@@ -277,7 +286,9 @@ class AddTaskProvider extends ChangeNotifier {
           payload: descriptionController.text,
           date: dateValue,
           time: timeValue);
-      showToast("New Task Added", Colors.blue.shade700);
+
+      showToast("Task has Updated", Colors.amber.shade700);
+      clear(context);
     }
   }
 
@@ -290,6 +301,8 @@ class AddTaskProvider extends ChangeNotifier {
     category = "Other";
     isOneDayBeforeChecked = false;
     isTenMinutesChecked = false;
+    visibility = false;
+    reminderVisibility = false;
 
     Navigator.pop(context);
   }

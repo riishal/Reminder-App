@@ -19,4 +19,49 @@ class AlertMessage {
       builder: (context) => alertDialog,
     );
   }
+
+  static void showComplete({
+    String? title,
+    String? content,
+    VoidCallback? onTap,
+    VoidCallback? onCancel,
+    Widget? widget,
+    context,
+  }) {
+    AlertDialog alertDialog = AlertDialog(
+      shape: ContinuousRectangleBorder(
+        borderRadius: BorderRadius.circular(30),
+      ),
+      title: Row(
+        children: [
+          Text(
+            title!,
+          ),
+          SizedBox(
+            width: 7,
+          ),
+          widget!
+        ],
+      ),
+      content: Text(
+        content!,
+      ),
+      actions: [
+        TextButton(
+            onPressed: () => onCancel!(),
+            child: Text(
+              "No",
+            )),
+        TextButton(
+            onPressed: () => onTap!(),
+            child: Text(
+              "Yes",
+            )),
+      ],
+    );
+    showDialog(
+      context: context,
+      builder: (context) => alertDialog,
+    );
+  }
 }

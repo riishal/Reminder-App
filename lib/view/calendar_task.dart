@@ -52,24 +52,51 @@ class _CalendarTaskState extends State<CalendarTask> {
                             itemBuilder: (context, index) {
                               var todo = snapshot.data[index];
                               Color categoryColor = Colors.black;
+                              String categoryText = "OTR";
 
                               final category = todo["category"];
                               switch (category) {
                                 case "Learn":
                                   categoryColor = Colors.green.shade500;
+                                  categoryText = "LRN";
 
                                   break;
                                 case "Work":
                                   categoryColor = Colors.blue.shade500;
+                                  categoryText = "WRK";
                                   break;
                                 case "Genarel":
                                   categoryColor = Colors.amber.shade500;
+                                  categoryText = "GEN";
                                   break;
                               }
 
-                              return Card(
-                                  color: categoryColor,
+                              return Container(
+                                  decoration: BoxDecoration(
+                                      border: Border.all(color: categoryColor),
+                                      color: Colors.white,
+                                      borderRadius: BorderRadius.circular(10)),
+                                  margin: EdgeInsets.all(8),
                                   child: ListTile(
+                                    contentPadding:
+                                        EdgeInsets.only(right: 10, left: 7),
+                                    leading: Container(
+                                      child: Center(
+                                          child: Text(
+                                        categoryText,
+                                        style: TextStyle(
+                                            color: Colors.white,
+                                            fontWeight: FontWeight.bold),
+                                      )),
+                                      decoration: BoxDecoration(
+                                          border: Border.all(
+                                              color: categoryColor, width: 2),
+                                          color: categoryColor,
+                                          borderRadius:
+                                              BorderRadius.circular(5)),
+                                      height: double.infinity,
+                                      width: 35,
+                                    ),
                                     title: Text(
                                       todo['titleTask'],
                                       style: TextStyle(

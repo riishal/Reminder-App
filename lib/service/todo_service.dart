@@ -31,6 +31,10 @@ class TodoService {
     todoCollection.doc(docId).update(todoModel.toMap());
   }
 
+  void moveToCompleteTask(TodoModel todoModel, String docId) {
+    todoCollection.doc(docId).update(todoModel.toMap());
+  }
+
   void updateTask(
     String? docId,
     bool? value,

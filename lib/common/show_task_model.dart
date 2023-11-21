@@ -47,11 +47,11 @@ class AddNewTask extends StatelessWidget {
                     SizedBox(
                       width: double.infinity,
                       child: buttonIndex == index
-                          ? const Text(
+                          ? Text(
                               "Update Your Task",
                               textAlign: TextAlign.center,
                               style: TextStyle(
-                                  color: Colors.black,
+                                  color: Colors.amber.shade800,
                                   fontWeight: FontWeight.bold,
                                   fontSize: 22),
                             )
@@ -65,7 +65,7 @@ class AddNewTask extends StatelessWidget {
                             ),
                     ),
                     Divider(
-                      color: Colors.grey.shade200,
+                      color: Colors.black,
                       thickness: 1.2,
                     ),
                     const SizedBox(
@@ -97,44 +97,60 @@ class AddNewTask extends StatelessWidget {
                     const SizedBox(
                       height: 12,
                     ),
-                    const Text("Category", style: AppStyle.headingOne),
-                    Row(
-                      children: [
-                        Expanded(
-                            child: RadioWidget(
-                          onchangeValue: () {
-                            getdata.setRadioValue(1, context);
-                          },
-                          valueInput: 1,
-                          categColor: Colors.green,
-                          titleRadio: "LRN",
-                        )),
-                        Expanded(
-                            child: RadioWidget(
-                          onchangeValue: () {
-                            getdata.setRadioValue(2, context);
-                          },
-                          valueInput: 2,
-                          categColor: Colors.blue.shade200,
-                          titleRadio: "WRK",
-                        )),
-                        Expanded(
-                            child: RadioWidget(
-                          onchangeValue: () {
-                            getdata.setRadioValue(3, context);
-                          },
-                          valueInput: 3,
-                          categColor: Colors.amber.shade700,
-                          titleRadio: "GEN",
-                        )),
-                      ],
+                    ElevatedButton.icon(
+                        icon: Icon(Icons.touch_app_outlined),
+                        style: ElevatedButton.styleFrom(
+                            backgroundColor: Colors.black),
+                        onPressed: () {
+                          getdata.setVisibility();
+                        },
+                        label: buttonIndex == index
+                            ? Text("Update your Category")
+                            : Text("Select your Category")),
+                    // const Text("Category", style: AppStyle.headingOne),
+                    Visibility(
+                      visible: getdata.visibility,
+                      child: Row(
+                        children: [
+                          Expanded(
+                              child: RadioWidget(
+                            onchangeValue: () {
+                              getdata.setRadioValue(1, context);
+                            },
+                            valueInput: 1,
+                            categColor: Colors.green,
+                            titleRadio: "LRN",
+                          )),
+                          Expanded(
+                              child: RadioWidget(
+                            onchangeValue: () {
+                              getdata.setRadioValue(2, context);
+                            },
+                            valueInput: 2,
+                            categColor: Colors.blue.shade200,
+                            titleRadio: "WRK",
+                          )),
+                          Expanded(
+                              child: RadioWidget(
+                            onchangeValue: () {
+                              getdata.setRadioValue(3, context);
+                            },
+                            valueInput: 3,
+                            categColor: Colors.amber.shade700,
+                            titleRadio: "GEN",
+                          )),
+                        ],
+                      ),
                     ),
                     //date and time section
+
                     Row(
                       mainAxisAlignment: MainAxisAlignment.spaceBetween,
                       children: [
                         DateTimeWidget(
-                            onTap: () => getdata.setDate(context),
+                            onTap: () {
+                              getdata.setDate(context);
+                            },
                             iconSelection: CupertinoIcons.calendar,
                             titleText: "Date",
                             valueText: getdata.dateValue.toString()),
@@ -151,31 +167,48 @@ class AddNewTask extends StatelessWidget {
                     const SizedBox(
                       height: 12,
                     ),
-                    const Text("Reminder", style: AppStyle.headingOne),
+
+                    ElevatedButton.icon(
+                        icon: Icon(Icons.alarm),
+                        style: ElevatedButton.styleFrom(
+                            backgroundColor: Colors.red.shade500),
+                        onPressed: () {
+                          getdata.setReminderVisibility();
+                        },
+                        label: buttonIndex == index
+                            ? Text("Update Reminder")
+                            : Text("Set Reminder")),
                     const SizedBox(
                       height: 6,
                     ),
-                    OtherTaskField(
-                      text: "10 minutes before",
-                      value: getdata.isTenMinutesChecked,
-                      onChanged: (value) {
-                        getdata.onCheckedTenMinutes(value);
-                        print(value);
-                      },
-                    ),
-                    const SizedBox(
-                      height: 12,
-                    ),
-                    OtherTaskField(
-                      text: "One day before",
-                      value: getdata.isOneDayBeforeChecked,
-                      onChanged: (value) {
-                        getdata.onCheckedOneDayBefore(value);
-                        print(value);
-                      },
-                    ),
-                    const SizedBox(
-                      height: 22,
+                    Visibility(
+                      visible: getdata.reminderVisibility,
+                      child: Column(
+                        children: [
+                          OtherTaskField(
+                            text: "10 minutes before",
+                            value: getdata.isTenMinutesChecked,
+                            onChanged: (value) {
+                              getdata.onCheckedTenMinutes(value);
+                              print(value);
+                            },
+                          ),
+                          const SizedBox(
+                            height: 12,
+                          ),
+                          OtherTaskField(
+                            text: "One day before",
+                            value: getdata.isOneDayBeforeChecked,
+                            onChanged: (value) {
+                              getdata.onCheckedOneDayBefore(value);
+                              print(value);
+                            },
+                          ),
+                          const SizedBox(
+                            height: 22,
+                          ),
+                        ],
+                      ),
                     ),
 
                     //button Section
