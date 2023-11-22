@@ -21,10 +21,10 @@ class AlertMessage {
   }
 
   static void showComplete({
-    String? title,
+    required String title,
     String? content,
-    VoidCallback? onTap,
-    VoidCallback? onCancel,
+    required VoidCallback onTap,
+    required VoidCallback onCancel,
     Widget? widget,
     context,
   }) {
@@ -35,7 +35,7 @@ class AlertMessage {
       title: Row(
         children: [
           Text(
-            title!,
+            title,
           ),
           SizedBox(
             width: 7,
@@ -48,12 +48,12 @@ class AlertMessage {
       ),
       actions: [
         TextButton(
-            onPressed: () => onCancel!(),
+            onPressed: () => onCancel(),
             child: Text(
               "No",
             )),
         TextButton(
-            onPressed: () => onTap!(),
+            onPressed: () => onTap(),
             child: Text(
               "Yes",
             )),

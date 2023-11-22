@@ -145,7 +145,7 @@ class _HomeTaskState extends State<HomeTask>
             if (snapshot.hasData) {
               final documents = snapshot.data!.docs;
               // getdata.checkTaskConditions(snapshot.data!.docs, taskState);
-
+              print(documents.toString());
               return SizedBox(
                 height: 500,
                 child: RefreshIndicator(
@@ -157,8 +157,8 @@ class _HomeTaskState extends State<HomeTask>
                       itemBuilder: (context, index) {
                         QueryDocumentSnapshot<Map<String, dynamic>> data =
                             snapshot.data!.docs[index];
-                        addTaskProvider.updateTimeDateState(
-                            data["dateTask"], data["timeTask"], data.id);
+                        // addTaskProvider.updateTimeDateState(
+                        //     data["dateTask"], data["timeTask"], data.id);
                         return Material(
                           color: Colors.transparent,
                           child: Ink(

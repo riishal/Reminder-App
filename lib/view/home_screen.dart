@@ -57,7 +57,10 @@ class _HomeScreenState extends State<HomeScreen> {
         onTap: (index) {
           setState(() {
             _currentIndex = index;
-            addTaskProvider.dateValue;
+
+            if (_currentIndex == 0) {
+              addTaskProvider.dateValue = "dd/MM/yyyy";
+            } else {}
           });
         },
         items: const [

@@ -27,6 +27,7 @@ class AddTaskProvider extends ChangeNotifier {
   int radioValue = 0;
   String dateValue = "dd/MM/yyyy";
   String timeValue = "hh:mma";
+  String reminderValue = "hh:mma";
   String category = "Other";
   int tenminutesValue = 0;
   int ondayValue = 0;
@@ -127,9 +128,13 @@ class AddTaskProvider extends ChangeNotifier {
 //date time format changing
   setDateAndTime(context) {
     final format = DateFormat.yMd();
-    if (dateValue == "dd/MM/yyyy" && timeValue == "hh:mma") {
+    if (dateValue == "dd/MM/yyyy" &&
+        timeValue == "hh:mma" &&
+        reminderValue == "hh:mma") {
       dateValue = format.format(DateTime.now());
       timeValue = DateFormat('hh:mma').format(DateTime.now());
+      reminderValue = DateFormat('hh:mma')
+          .format(DateTime.now().subtract(const Duration(minutes: 5)));
       print('////////// time value: $timeValue');
     }
     notifyListeners();
@@ -156,10 +161,29 @@ class AddTaskProvider extends ChangeNotifier {
         context: context, initialTime: TimeOfDay.fromDateTime(DateTime.now()));
     if (getTime != null) {
       timeValue = getTime.format(context);
+      reminderValue = TimeOfDay.fromDateTime(
+              DateTime.now().subtract(const Duration(minutes: 5)))
+          .format(context);
       print('////////// time value: $timeValue');
     } else {
       timeValue = DateFormat('hh:mma').format(DateTime.now());
       print('////////// time value: $timeValue');
+    }
+    notifyListeners();
+  }
+
+  void setReminder(BuildContext context) async {
+    final getTime = await showTimePicker(
+        context: context,
+        initialTime: TimeOfDay.fromDateTime(
+            DateTime.now().subtract(const Duration(minutes: 5))));
+    if (getTime != null) {
+      reminderValue = getTime.format(context);
+      print('////////// reminder value: $reminderValue');
+    } else {
+      reminderValue = DateFormat('hh:mma')
+          .format(DateTime.now().subtract(const Duration(minutes: 5)));
+      print('////////// reminder value: $reminderValue');
     }
     notifyListeners();
   }
@@ -209,23 +233,23 @@ class AddTaskProvider extends ChangeNotifier {
     //onday before notification
     //10 minutes before notification
     LocalNotifications.showScheduleNotification(
-        dayy: ondayValue,
-        minute: tenminutesValue,
+        // dayy: ondayValue,
+        // minute: tenminutesValue,
         title: "Get ready! ${titleController.text} is scheduled soon.",
         body:
-            "This is a friendly reminder for your task Scheduled Time:$timeValue",
+            "This is a friendly reminder for your task Scheduled Time:$reminderValue",
         payload: descriptionController.text,
         date: dateValue,
-        time: timeValue);
+        time: reminderValue);
     //Current time notification
     LocalNotifications.showScheduleNotification(
-        dayy: 0,
-        minute: 0,
+        // dayy: 0,
+        // minute: 0,
         title: "Your Time is Now!",
         body: "Time is ticking! Do your ${titleController.text} task now.",
         payload: descriptionController.text,
         date: dateValue,
-        time: timeValue);
+        time: reminderValue);
   }
 
 //updating firestore all tasks
@@ -269,23 +293,23 @@ class AddTaskProvider extends ChangeNotifier {
           docId);
       //5 minutes before notification
       LocalNotifications.showScheduleNotification(
-          dayy: ondayValue,
-          minute: tenminutesValue,
+          // dayy: ondayValue,
+          // minute: tenminutesValue,
           title: "Get ready! ${titleController.text} is scheduled soon.",
           body:
               "This is a friendly reminder for your task Scheduled Time:$timeValue",
           payload: descriptionController.text,
           date: dateValue,
-          time: timeValue);
+          time: reminderValue);
       //Current time notification
       LocalNotifications.showScheduleNotification(
-          dayy: 0,
-          minute: 0,
+          // dayy: 0,
+          // minute: 0,
           title: "Your Time is Now!",
           body: "Time is ticking! Do your ${titleController.text} task now.",
           payload: descriptionController.text,
           date: dateValue,
-          time: timeValue);
+          time: reminderValue);
 
       showToast("Task has Updated", Colors.amber.shade700);
       clear(context);
@@ -357,5 +381,14 @@ class AddTaskProvider extends ChangeNotifier {
       TodoService().updateTaskState1(docId, "finished");
     }
     // notifyListeners();
+  }
+
+  moveToComplete(String docId) {
+    var date = format.format(DateTime.now());
+    var time =
+        DateFormat('hh:mma').format(DateTime.now().add(Duration(minutes: -2)));
+
+    TodoService().moveToCompleteTask(docId, date, time, "finished");
+    print("$date//$time");
   }
 }

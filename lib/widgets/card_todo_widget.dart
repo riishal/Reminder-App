@@ -81,9 +81,9 @@ class _CardTodoListWidgetState extends State<CardTodoListWidget> {
                                 title: "Delete Task",
                                 content: "Are sure want to delete your task?",
                                 context: context,
-                                onTap: () {
+                                onTap: () async {
                                   getdata.deleteTask(widget.data.id);
-                                  Navigator.pop(context);
+
                                   getdata.showToast(
                                       "${widget.data["titleTask"]} Task has Deleted",
                                       Colors.red);
@@ -124,7 +124,7 @@ class _CardTodoListWidgetState extends State<CardTodoListWidget> {
                       scale: 1.5,
                       child: Checkbox(
                           activeColor: widget.data["taskState"] == "finished"
-                              ? Colors.red
+                              ? categoryColor
                               : Colors.green,
                           shape: const CircleBorder(),
                           value: widget.data["isDone"],
@@ -146,6 +146,7 @@ class _CardTodoListWidgetState extends State<CardTodoListWidget> {
                                         "Are sure want to Complete\nyour task?",
                                     context: context,
                                     onTap: () {
+                                      getdata.moveToComplete(widget.data.id);
                                       // getdata.updateTimeDateState(
                                       //     widget.data["dateTask"],
                                       //     widget.data["timeTask"],
@@ -153,6 +154,8 @@ class _CardTodoListWidgetState extends State<CardTodoListWidget> {
                                       Navigator.pop(context);
                                     },
                                     onCancel: () async {
+                                      getdata.updateTask(widget.data.id, false);
+                                      widget.data["taskState"] == "upcoming";
                                       Navigator.pop(context);
                                     },
                                   )
@@ -203,12 +206,6 @@ class _CardTodoListWidgetState extends State<CardTodoListWidget> {
                                                 fontWeight: FontWeight.w500),
                                           ),
                                         ),
-                                        Text(
-                                          widget.data["category"],
-                                          style: TextStyle(
-                                              color: categoryColor,
-                                              fontWeight: FontWeight.bold),
-                                        )
                                       ],
                                     ),
                       const SizedBox(
@@ -239,7 +236,12 @@ class _CardTodoListWidgetState extends State<CardTodoListWidget> {
                                       color: Colors.red,
                                       fontWeight: FontWeight.bold),
                                 )
-                              : SizedBox()
+                              : Text(
+                                  widget.data["category"],
+                                  style: TextStyle(
+                                      color: categoryColor,
+                                      fontWeight: FontWeight.bold),
+                                )
                         ],
                       ),
                     ]),

@@ -41,7 +41,7 @@ class AddNewTask extends StatelessWidget {
                   mainAxisAlignment: MainAxisAlignment.center,
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
-                    SizedBox(
+                    const SizedBox(
                       height: 15,
                     ),
                     SizedBox(
@@ -64,7 +64,7 @@ class AddNewTask extends StatelessWidget {
                                   fontSize: 22),
                             ),
                     ),
-                    Divider(
+                    const Divider(
                       color: Colors.black,
                       thickness: 1.2,
                     ),
@@ -98,15 +98,15 @@ class AddNewTask extends StatelessWidget {
                       height: 12,
                     ),
                     ElevatedButton.icon(
-                        icon: Icon(Icons.touch_app_outlined),
+                        icon: const Icon(Icons.touch_app_outlined),
                         style: ElevatedButton.styleFrom(
                             backgroundColor: Colors.black),
                         onPressed: () {
                           getdata.setVisibility();
                         },
                         label: buttonIndex == index
-                            ? Text("Update your Category")
-                            : Text("Select your Category")),
+                            ? const Text("Update your Category")
+                            : const Text("Select your Category")),
                     // const Text("Category", style: AppStyle.headingOne),
                     Visibility(
                       visible: getdata.visibility,
@@ -147,37 +147,48 @@ class AddNewTask extends StatelessWidget {
                     Row(
                       mainAxisAlignment: MainAxisAlignment.spaceBetween,
                       children: [
-                        DateTimeWidget(
-                            onTap: () {
-                              getdata.setDate(context);
-                            },
-                            iconSelection: CupertinoIcons.calendar,
-                            titleText: "Date",
-                            valueText: getdata.dateValue.toString()),
+                        Expanded(
+                          child: DateTimeWidget(
+                              onTap: () {
+                                getdata.setDate(context);
+                              },
+                              iconSelection: CupertinoIcons.calendar,
+                              titleText: "Date",
+                              valueText: getdata.dateValue.toString()),
+                        ),
                         const SizedBox(
                           width: 22,
                         ),
-                        DateTimeWidget(
-                            onTap: () => getdata.setTime(context),
-                            iconSelection: CupertinoIcons.clock,
-                            titleText: "Time",
-                            valueText: getdata.timeValue.toString()),
+                        Expanded(
+                          child: DateTimeWidget(
+                              onTap: () => getdata.setTime(context),
+                              iconSelection: CupertinoIcons.clock,
+                              titleText: "Time",
+                              valueText: getdata.timeValue.toString()),
+                        ),
                       ],
                     ),
                     const SizedBox(
                       height: 12,
                     ),
-
-                    ElevatedButton.icon(
-                        icon: Icon(Icons.alarm),
-                        style: ElevatedButton.styleFrom(
-                            backgroundColor: Colors.red.shade500),
-                        onPressed: () {
-                          getdata.setReminderVisibility();
-                        },
-                        label: buttonIndex == index
-                            ? Text("Update Reminder")
-                            : Text("Set Reminder")),
+                    SizedBox(
+                      width: size.width / 2.5,
+                      child: DateTimeWidget(
+                          onTap: () => getdata.setReminder(context),
+                          iconSelection: CupertinoIcons.clock,
+                          titleText: "Set Reminder",
+                          valueText: getdata.reminderValue.toString()),
+                    ),
+                    // ElevatedButton.icon(
+                    //     icon: Icon(Icons.alarm),
+                    //     style: ElevatedButton.styleFrom(
+                    //         backgroundColor: Colors.red.shade500),
+                    //     onPressed: () {
+                    //       getdata.setReminderVisibility();
+                    //     },
+                    //     label: buttonIndex == index
+                    //         ? Text("Update Reminder")
+                    //         : Text("Set Reminder")),
                     const SizedBox(
                       height: 6,
                     ),
