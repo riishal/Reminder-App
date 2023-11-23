@@ -45,7 +45,7 @@ class _CardTodoListWidgetState extends State<CardTodoListWidget> {
       case "Work":
         categoryColor = Colors.blue.shade200;
         break;
-      case "Genarel":
+      case "General":
         categoryColor = Colors.amber.shade500;
         break;
     }
@@ -73,34 +73,36 @@ class _CardTodoListWidgetState extends State<CardTodoListWidget> {
                 mainAxisAlignment: MainAxisAlignment.center,
                 children: [
                   ListTile(
-                    leading: widget.data["isDone"]
-                        ? IconButton(
-                            onPressed: () {
-                              AlertMessage.showComplete(
-                                widget: SizedBox(),
-                                title: "Delete Task",
-                                content: "Are sure want to delete your task?",
-                                context: context,
-                                onTap: () async {
-                                  getdata.deleteTask(widget.data.id);
+                    leading: widget.data["taskState"] == "finished"
+                        ? widget.data["isDone"]
+                            ? IconButton(
+                                onPressed: () {
+                                  AlertMessage.showComplete(
+                                    widget: SizedBox(),
+                                    title: "Delete Task",
+                                    content:
+                                        "Are sure want to delete your task?",
+                                    context: context,
+                                    onTap: () async {
+                                      getdata.deleteTask(widget.data.id);
 
-                                  getdata.showToast(
-                                      "${widget.data["titleTask"]} Task has Deleted",
-                                      Colors.red);
+                                      getdata.showToast(
+                                          "${widget.data["titleTask"]} Task has Deleted",
+                                          Colors.red);
 
-                                  Navigator.pop(context);
+                                      Navigator.pop(context);
+                                    },
+                                    onCancel: () async {
+                                      getdata.updateTask(widget.data.id, false);
+                                      Navigator.pop(context);
+                                    },
+                                  );
                                 },
-                                onCancel: () async {
-                                  Navigator.pop(context);
-                                },
-                              );
-                            },
-                            icon: widget.data["taskState"] == "finished"
-                                ? const Icon(
-                                    CupertinoIcons.delete,
-                                    color: Colors.red,
-                                  )
-                                : SizedBox())
+                                icon: const Icon(
+                                  CupertinoIcons.delete,
+                                  color: Colors.red,
+                                ))
+                            : null
                         : null,
                     contentPadding: EdgeInsets.zero,
                     title: Text(
@@ -147,15 +149,12 @@ class _CardTodoListWidgetState extends State<CardTodoListWidget> {
                                     context: context,
                                     onTap: () {
                                       getdata.moveToComplete(widget.data.id);
-                                      // getdata.updateTimeDateState(
-                                      //     widget.data["dateTask"],
-                                      //     widget.data["timeTask"],
-                                      //     widget.data.id);
+                                      getdata.updateTask(widget.data.id, false);
                                       Navigator.pop(context);
                                     },
                                     onCancel: () async {
                                       getdata.updateTask(widget.data.id, false);
-                                      widget.data["taskState"] == "upcoming";
+
                                       Navigator.pop(context);
                                     },
                                   )

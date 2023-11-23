@@ -92,7 +92,7 @@ class AddNewTask extends StatelessWidget {
                         hintText: buttonIndex == index
                             ? data!["description"]
                             : "Add Description",
-                        maxLine: 1,
+                        maxLine: 5,
                         textController: getdata.descriptionController),
                     const SizedBox(
                       height: 12,
@@ -171,14 +171,19 @@ class AddNewTask extends StatelessWidget {
                     const SizedBox(
                       height: 12,
                     ),
+                    const Text("Set Reminder", style: AppStyle.headingOne),
                     SizedBox(
                       width: size.width / 2.5,
-                      child: DateTimeWidget(
-                          onTap: () => getdata.setReminder(context),
-                          iconSelection: CupertinoIcons.clock,
-                          titleText: "Set Reminder",
-                          valueText: getdata.reminderValue.toString()),
+                      child: ElevatedButton.icon(
+                          style: ElevatedButton.styleFrom(
+                              backgroundColor: Colors.red),
+                          onPressed: () {
+                            getdata.setReminder(context);
+                          },
+                          icon: Icon(CupertinoIcons.alarm),
+                          label: Text(getdata.reminderValue.toString())),
                     ),
+
                     // ElevatedButton.icon(
                     //     icon: Icon(Icons.alarm),
                     //     style: ElevatedButton.styleFrom(
@@ -190,36 +195,7 @@ class AddNewTask extends StatelessWidget {
                     //         ? Text("Update Reminder")
                     //         : Text("Set Reminder")),
                     const SizedBox(
-                      height: 6,
-                    ),
-                    Visibility(
-                      visible: getdata.reminderVisibility,
-                      child: Column(
-                        children: [
-                          OtherTaskField(
-                            text: "10 minutes before",
-                            value: getdata.isTenMinutesChecked,
-                            onChanged: (value) {
-                              getdata.onCheckedTenMinutes(value);
-                              print(value);
-                            },
-                          ),
-                          const SizedBox(
-                            height: 12,
-                          ),
-                          OtherTaskField(
-                            text: "One day before",
-                            value: getdata.isOneDayBeforeChecked,
-                            onChanged: (value) {
-                              getdata.onCheckedOneDayBefore(value);
-                              print(value);
-                            },
-                          ),
-                          const SizedBox(
-                            height: 22,
-                          ),
-                        ],
-                      ),
+                      height: 10,
                     ),
 
                     //button Section

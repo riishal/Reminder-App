@@ -76,18 +76,11 @@ class _CalendarTaskState extends State<CalendarTask> {
                                       border: Border.all(color: categoryColor),
                                       color: Colors.white,
                                       borderRadius: BorderRadius.circular(10)),
-                                  margin: EdgeInsets.all(8),
+                                  margin: const EdgeInsets.all(8),
                                   child: ListTile(
-                                    contentPadding:
-                                        EdgeInsets.only(right: 10, left: 7),
+                                    contentPadding: const EdgeInsets.only(
+                                        right: 10, left: 7),
                                     leading: Container(
-                                      child: Center(
-                                          child: Text(
-                                        categoryText,
-                                        style: TextStyle(
-                                            color: Colors.white,
-                                            fontWeight: FontWeight.bold),
-                                      )),
                                       decoration: BoxDecoration(
                                           border: Border.all(
                                               color: categoryColor, width: 2),
@@ -96,10 +89,17 @@ class _CalendarTaskState extends State<CalendarTask> {
                                               BorderRadius.circular(5)),
                                       height: double.infinity,
                                       width: 35,
+                                      child: Center(
+                                          child: Text(
+                                        categoryText,
+                                        style: const TextStyle(
+                                            color: Colors.white,
+                                            fontWeight: FontWeight.bold),
+                                      )),
                                     ),
                                     title: Text(
                                       todo['titleTask'],
-                                      style: TextStyle(
+                                      style: const TextStyle(
                                         fontWeight: FontWeight.bold,
                                       ),
                                     ),
@@ -107,28 +107,28 @@ class _CalendarTaskState extends State<CalendarTask> {
                                       crossAxisAlignment:
                                           CrossAxisAlignment.start,
                                       children: [
-                                        SizedBox(
+                                        const SizedBox(
                                           height: 4,
                                         ),
                                         Text(
                                           todo['description'],
                                         ),
-                                        SizedBox(
+                                        const SizedBox(
                                           height: 4,
                                         ),
                                         Text(
                                           todo['timeTask'],
-                                          style: TextStyle(
+                                          style: const TextStyle(
                                               fontWeight: FontWeight.w500),
                                         ),
-                                        SizedBox(
+                                        const SizedBox(
                                           height: 4,
                                         ),
                                       ],
                                     ),
                                     trailing: Text(
                                       todo['dateTask'],
-                                      style: TextStyle(
+                                      style: const TextStyle(
                                           fontWeight: FontWeight.w500),
                                     ),
                                   ));

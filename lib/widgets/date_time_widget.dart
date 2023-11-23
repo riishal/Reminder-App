@@ -42,7 +42,9 @@ class DateTimeWidget extends StatelessWidget {
                     borderRadius: BorderRadius.circular(8),
                     color: Colors.transparent),
                 child: Row(children: [
-                  Icon(iconSelection),
+                  Icon(
+                    iconSelection,
+                  ),
                   const SizedBox(
                     width: 12,
                   ),

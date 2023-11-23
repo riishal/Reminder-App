@@ -9,6 +9,8 @@ import '../core/constents.dart';
 import '../model/todo_model.dart';
 import '../service/notification_helper.dart';
 import '../service/todo_service.dart';
+
+import 'package:timezone/timezone.dart' as tz;
 // 13
 
 class AddTaskProvider extends ChangeNotifier {
@@ -95,7 +97,7 @@ class AddTaskProvider extends ChangeNotifier {
         category = "Work";
         break;
       case 3:
-        category = "Genarel";
+        category = "General";
         break;
       default:
         category;
@@ -114,7 +116,7 @@ class AddTaskProvider extends ChangeNotifier {
       case "Work":
         radioValue = 2;
         break;
-      case "Genarel":
+      case "General":
         radioValue = 3;
         break;
       default:
@@ -133,8 +135,11 @@ class AddTaskProvider extends ChangeNotifier {
         reminderValue == "hh:mma") {
       dateValue = format.format(DateTime.now());
       timeValue = DateFormat('hh:mma').format(DateTime.now());
-      reminderValue = DateFormat('hh:mma')
-          .format(DateTime.now().subtract(const Duration(minutes: 5)));
+      reminderValue =
+          DateFormat('hh:mma').format(DateTime.now().subtract(Duration(
+        minutes: 5,
+      )));
+
       print('////////// time value: $timeValue');
     }
     notifyListeners();
@@ -160,10 +165,17 @@ class AddTaskProvider extends ChangeNotifier {
     final getTime = await showTimePicker(
         context: context, initialTime: TimeOfDay.fromDateTime(DateTime.now()));
     if (getTime != null) {
+      setDateAndTime(context);
       timeValue = getTime.format(context);
-      reminderValue = TimeOfDay.fromDateTime(
-              DateTime.now().subtract(const Duration(minutes: 5)))
-          .format(context);
+      var date = dateValue.split('/').toList();
+      var dateExp = '${date[1]}/${date[0]}/${date[2]}';
+      String time = timeValue;
+      String dateTime = '$dateExp ${time.split(' ').join()}';
+      print('NewDate: $dateExp ${time.split(' ').join()}');
+      DateTime newDate = DateFormat("dd/MM/yyyy hh:mma").parse(dateTime);
+      reminderValue =
+          TimeOfDay.fromDateTime(newDate.subtract(const Duration(minutes: 5)))
+              .format(context);
       print('////////// time value: $timeValue');
     } else {
       timeValue = DateFormat('hh:mma').format(DateTime.now());
@@ -178,7 +190,24 @@ class AddTaskProvider extends ChangeNotifier {
         initialTime: TimeOfDay.fromDateTime(
             DateTime.now().subtract(const Duration(minutes: 5))));
     if (getTime != null) {
-      reminderValue = getTime.format(context);
+      String timeV = timeValue.split(' ').first;
+      String remindT = reminderValue.split(' ').first;
+
+      TimeOfDay startTime = TimeOfDay(
+          hour: int.parse(timeV.split(":")[0]),
+          minute: int.parse(timeV.split(":")[1]));
+      TimeOfDay reminderTime = TimeOfDay(
+          hour: int.parse(remindT.split(":")[0]),
+          minute: int.parse(remindT.split(":")[1]));
+      print('st $startTime rt $reminderTime');
+
+      if (reminderTime.hour > startTime.hour) {
+        AlertMessage.showAlertDialog(
+            context, "", "Please Update all the fields");
+        reminderValue = timeValue;
+      } else {
+        reminderValue = getTime.format(context);
+      }
       print('////////// reminder value: $reminderValue');
     } else {
       reminderValue = DateFormat('hh:mma')
@@ -249,7 +278,8 @@ class AddTaskProvider extends ChangeNotifier {
         body: "Time is ticking! Do your ${titleController.text} task now.",
         payload: descriptionController.text,
         date: dateValue,
-        time: reminderValue);
+        time: timeValue);
+    getTask(DateFormat.yMd().parse(dateValue));
   }
 
 //updating firestore all tasks
@@ -309,11 +339,12 @@ class AddTaskProvider extends ChangeNotifier {
           body: "Time is ticking! Do your ${titleController.text} task now.",
           payload: descriptionController.text,
           date: dateValue,
-          time: reminderValue);
+          time: timeValue);
 
       showToast("Task has Updated", Colors.amber.shade700);
       clear(context);
     }
+    notifyListeners();
   }
 
   void clear(context) {
@@ -344,12 +375,35 @@ class AddTaskProvider extends ChangeNotifier {
         msg: msg, backgroundColor: color, textColor: Colors.white);
   }
 
+  // compareRemiderAndTime(context) {
+  //   String time = DateFormat("HH:mm")
+  //       .format(DateFormat("hh:mma").parse(timeValue.split(" ").join()));
+  //   List timeList = time.split(':').toList();
+
+  //   String reTime = DateFormat("HH:mm")
+  //       .format(DateFormat("hh:mma").parse(timeValue.split(" ").join()));
+  //   List reTimeList = reTime.split(':').toList();
+
+  //   tz.TZDateTime newTime = tz.TZDateTime.from(
+  //       DateTime(int.parse(timeList[0]), int.parse(timeList[1])), tz.local);
+
+  //   tz.TZDateTime reNewTime = tz.TZDateTime.from(
+  //       DateTime(int.parse(reTimeList[0]), int.parse(reTimeList[1])), tz.local);
+  //   if (newTime.isAfter(reNewTime)) {
+  //     AlertMessage.showAlertDialog(
+  //         context, "Reminder error", "Your reminder time has big");
+  //   } else {}
+  // }
+
   void checkValues(context) {
     String title = titleController.text.trim();
     String description = descriptionController.text.trim();
-    if (title == "" || description == "") {
+    if (title == "" ||
+        description == "" ||
+        dateValue == "dd/MM/yyyy" ||
+        timeValue == "hh:mma") {
       AlertMessage.showAlertDialog(
-          context, "Incomplited", "Please fill all the fields");
+          context, "InCompleted", "Please fill all the fields");
     } else {
       //login
       addTask(context);
@@ -367,28 +421,27 @@ class AddTaskProvider extends ChangeNotifier {
     }
   }
 
-  updateTimeDateState(String date1, String time1, String docId) {
-    var date = date1.split('/').toList();
-    var dateExp = '${date[1]}/${date[0]}/${date[2]}';
-    String time = time1;
-    String dateTime = '$dateExp ${time.split(' ').join()}';
-    print('NewDate: $dateExp ${time.split(' ').join()}');
-    DateTime newDate = DateFormat("dd/MM/yyyy hh:mma").parse(dateTime);
-    print('Date: ${DateTime.now()}');
-    print('newDate: $newDate');
-    if (newDate.isBefore(DateTime.now())) {
-      print('equal time: $docId');
-      TodoService().updateTaskState1(docId, "finished");
-    }
-    // notifyListeners();
-  }
+  // updateTimeDateState(String date1, String time1, String docId) {
+  //   var date = date1.split('/').toList();
+  //   var dateExp = '${date[1]}/${date[0]}/${date[2]}';
+  //   String time = time1;
+  //   String dateTime = '$dateExp ${time.split(' ').join()}';
+  //   print('NewDate: $dateExp ${time.split(' ').join()}');
+  //   DateTime newDate = DateFormat("dd/MM/yyyy hh:mma").parse(dateTime);
+  //   print('Date: ${DateTime.now()}');
+  //   print('newDate: $newDate');
+  //   if (newDate.isBefore(DateTime.now())) {
+  //     print('equal time: $docId');
+  //     TodoService().updateTaskState1(docId, "finished");
+  //   }
+  //   // notifyListeners();
+  // }
 
   moveToComplete(String docId) {
     var date = format.format(DateTime.now());
-    var time =
-        DateFormat('hh:mma').format(DateTime.now().add(Duration(minutes: -2)));
+    var time = DateFormat('hh:mma').format(DateTime.now());
 
-    TodoService().moveToCompleteTask(docId, date, time, "finished");
+    TodoService().moveToCompleteTask(docId, time, date, "finished");
     print("$date//$time");
   }
 }

@@ -10,17 +10,17 @@ class HomeScreen extends StatefulWidget {
   const HomeScreen({super.key});
 
   @override
+  // ignore: library_private_types_in_public_api
   _HomeScreenState createState() => _HomeScreenState();
 }
 
 class _HomeScreenState extends State<HomeScreen> {
   late AddTaskProvider addTaskProvider;
   int _currentIndex = 0;
-  bool _isLoading = true;
   @override
   void initState() {
     addTaskProvider = Provider.of<AddTaskProvider>(context, listen: false);
-    // TODO: implement initState
+
     super.initState();
   }
 
@@ -29,10 +29,11 @@ class _HomeScreenState extends State<HomeScreen> {
     var size = MediaQuery.of(context).size;
 
     return Scaffold(
-      floatingActionButton: FloatingActionButton(
-        backgroundColor: Color.fromARGB(255, 191, 224, 254),
-        foregroundColor: Colors.blue.shade800,
-        child: Icon(Icons.add),
+      floatingActionButton: FloatingActionButton.extended(
+        label: const Text("Task"),
+        backgroundColor: Colors.blue.shade800,
+        foregroundColor: Colors.white,
+        icon: const Icon(Icons.add),
         onPressed: () {
           showModalBottomSheet(
             isScrollControlled: true,
@@ -53,6 +54,9 @@ class _HomeScreenState extends State<HomeScreen> {
         ],
       ),
       bottomNavigationBar: BottomNavigationBar(
+        elevation: 10,
+        backgroundColor: Colors.white,
+        selectedItemColor: Colors.blue.shade800,
         currentIndex: _currentIndex,
         onTap: (index) {
           setState(() {

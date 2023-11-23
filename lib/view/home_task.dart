@@ -42,48 +42,52 @@ class _HomeTaskState extends State<HomeTask>
 
     return Scaffold(
         backgroundColor: Colors.grey.shade100,
-        // appBar: AppBar(
-        //   title: Text(
-        //     "Todo App",
-        //     style: TextStyle(color: Colors.black),
-        //   ),
-        //   backgroundColor: Colors.white,
-        //   elevation: 0,
-        // ),
-
+        appBar: PreferredSize(
+          preferredSize: const Size.fromHeight(70.0),
+          child: AppBar(
+            backgroundColor: Colors.grey.shade100,
+            title:
+                Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
+              const SizedBox(
+                height: 10,
+              ),
+              const Text(
+                'Today\'s Task',
+                style: TextStyle(
+                    fontSize: 20,
+                    fontWeight: FontWeight.bold,
+                    color: Colors.black),
+              ),
+              const SizedBox(
+                height: 7,
+              ),
+              Text(
+                todayDate.toString(),
+                style: const TextStyle(
+                  color: Colors.grey,
+                  fontSize: 15,
+                ),
+              )
+            ]),
+            elevation: 0,
+          ),
+        ),
         body: SafeArea(
           child: Container(
-            margin: const EdgeInsets.symmetric(horizontal: 15, vertical: 10),
+            margin: const EdgeInsets.symmetric(
+              horizontal: 11,
+            ),
             child: Column(
               children: [
-                Row(
-                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                  children: [
-                    Column(
-                        crossAxisAlignment: CrossAxisAlignment.start,
-                        children: [
-                          const Text(
-                            'Today\'s Task',
-                            style: TextStyle(
-                                fontSize: 20,
-                                fontWeight: FontWeight.bold,
-                                color: Colors.black),
-                          ),
-                          const SizedBox(
-                            height: 3,
-                          ),
-                          Text(
-                            todayDate.toString(),
-                            style: TextStyle(color: Colors.grey.shade600),
-                          )
-                        ]),
-                  ],
-                ),
                 const SizedBox(
-                  height: 15,
+                  height: 5,
                 ),
                 Container(
+                  height: 45,
                   decoration: BoxDecoration(
+                    boxShadow: const [
+                      BoxShadow(blurRadius: 2, color: Colors.grey)
+                    ],
                     color: Colors.white,
                     borderRadius: BorderRadius.circular(30),
                   ),
@@ -103,7 +107,7 @@ class _HomeTaskState extends State<HomeTask>
                     labelColor: Colors.white,
                     indicatorSize: TabBarIndicatorSize.tab,
                     labelPadding: const EdgeInsets.symmetric(vertical: 8),
-                    tabs: [
+                    tabs: const [
                       Text(
                         'Upcoming Tasks',
                         // style: TextStyle(color: Colors.blue)
@@ -169,7 +173,7 @@ class _HomeTaskState extends State<HomeTask>
                                           ? Colors.red
                                           : Colors.black,
                                       blurRadius: 1,
-                                      offset: Offset(10, 10))
+                                      offset: const Offset(10, 10))
                                 ],
                                 color: Colors.white,
                                 borderRadius: BorderRadius.circular(12)),

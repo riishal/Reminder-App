@@ -7,6 +7,7 @@ import 'package:todo_app/service/notification_helper.dart';
 import 'package:todo_app/view/home_screen.dart';
 
 import 'package:todo_app/view/home_task.dart';
+import 'package:todo_app/view/splash_screen.dart';
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
@@ -31,9 +32,9 @@ class MyApp extends StatelessWidget {
           create: (context) => TaskHomeProvider(),
         )
       ],
-      child: MaterialApp(
+      child: const MaterialApp(
         debugShowCheckedModeBanner: false,
-        home: HomeScreen(),
+        home: SplashScreen(),
       ),
     );
   }
